@@ -9,7 +9,7 @@ export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'gb8585438@gmail.com';
  * Application / frontend URL used to build verification links.
  * Must be set to the public-facing domain (e.g. https://yourstore.com).
  */
-export const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+export const APP_URL = process.env.APP_URL || process.env.NEXT_PUBLIC_SITE_URL || 'https://online-store-gilt-gamma.vercel.app';
 
 /**
  * Site / brand name used in emails and UI.

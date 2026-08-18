@@ -11,7 +11,7 @@ import {
   User,
   Menu,
   X,
-  Sparkles,
+  Crown,
   LayoutDashboard,
   LogOut,
   ChevronDown,
@@ -62,8 +62,18 @@ export const Navbar: React.FC = () => {
     }
   }, [isSearchOpen]);
 
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+      setIsMobileMenuOpen(false);
+      setIsSearchOpen(false);
+      setIsUserMenuOpen(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   const navLinks = [
-    { label: 'Home', href: '/' },
     { label: 'Shop All', href: '/shop' },
     { label: 'Timepieces', href: '/shop?category=timepieces' },
     { label: 'Acoustics', href: '/shop?category=audio-tech' },
@@ -95,45 +105,47 @@ export const Navbar: React.FC = () => {
     <>
       <header
         className={cn(
-          'fixed top-0 inset-x-0 z-40 transition-all duration-300',
+          'fixed top-0 inset-x-0 z-40 border-b transition-all duration-300 ease-out',
           isScrolled
-            ? 'glass-navbar py-3 shadow-2xl backdrop-blur-xl'
-            : 'bg-gradient-to-b from-background/90 via-background/60 to-transparent py-5 backdrop-blur-sm'
+            ? 'glass-navbar py-2.5 shadow-[0_12px_30px_rgba(0,0,0,0.24)] backdrop-blur-xl border-white/10'
+            : 'bg-[#080b12]/86 py-3.5 backdrop-blur-md border-white/[0.07]'
         )}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
           {/* Left: Mobile Menu & Brand Logo */}
           <div className="flex items-center gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="lg:hidden p-2 text-gray-300 hover:text-white rounded-xl hover:bg-white/5 transition-colors"
+              className="xl:hidden p-2.5 text-gray-300 hover:text-gold-400 rounded-xl hover:bg-white/5 transition-all duration-200"
               aria-label="Open navigation menu"
             >
               <Menu className="w-6 h-6" />
             </button>
 
-            <Link href="/" className="flex items-center gap-2.5 group">
-              <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-400 via-gold-500 to-amber-700 p-0.5 shadow-lg shadow-gold-500/20 group-hover:scale-105 transition-transform">
-                <div className="w-full h-full bg-surface-300 rounded-[6px] flex items-center justify-center">
-                  <Sparkles className="w-4 h-4 text-gold-400" />
+            <Link href="/" className="relative flex items-center gap-2.5 group py-1" aria-label="Luxe Atelier Home">
+              <div className="w-9 h-9 rounded-[10px] border border-gold-400/60 bg-gradient-to-br from-gold-400/20 via-[#161719] to-black p-0.5 shadow-[0_0_0_1px_rgba(245,184,0,0.08)] transition-all duration-300 group-hover:border-gold-300 group-hover:shadow-[0_0_18px_rgba(245,184,0,0.2)]">
+                <div className="w-full h-full bg-[#0b0e15] rounded-[8px] flex items-center justify-center">
+                  <Crown className="w-4 h-4 text-gold-400 transition-transform duration-300 group-hover:-translate-y-0.5" strokeWidth={1.6} />
                 </div>
               </div>
-              <span className="text-xl font-bold tracking-wider text-white uppercase font-display">
-                LUXE<span className="text-gold-400 font-light ml-1">ATELIER</span>
+              <span className="leading-none uppercase font-display whitespace-nowrap">
+                <span className="block text-[17px] font-extrabold tracking-[0.13em] text-white">LUXE <span className="font-medium text-gold-400">ATELIER</span></span>
+                <span className="block mt-1 text-[8px] font-bold tracking-[0.33em] text-gold-400/90">HOME</span>
               </span>
+              <span className="absolute bottom-0 left-0 h-px w-[43px] origin-left bg-gradient-to-r from-gold-400 to-transparent transition-transform duration-300 group-hover:scale-x-125" />
             </Link>
           </div>
 
           {/* Center: Desktop Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-8">
+          <nav className="hidden xl:flex flex-1 items-center justify-center gap-4 2xl:gap-7" aria-label="Primary navigation">
             {navLinks.map((link) => {
-              const isActive = pathname === link.href;
+              const isActive = pathname === '/shop' && link.href === '/shop';
               return (
                 <Link
                   key={link.label}
                   href={link.href}
                   className={cn(
-                    'text-xs font-semibold uppercase tracking-wider transition-colors relative py-1 hover:text-white',
+                    'group relative py-2 text-[10px] 2xl:text-[11px] font-bold uppercase tracking-[0.12em] text-center leading-tight transition-colors duration-200 hover:text-gold-400',
                     isActive ? 'text-gold-400' : 'text-gray-300'
                   )}
                 >
@@ -141,9 +153,10 @@ export const Navbar: React.FC = () => {
                   {isActive && (
                     <motion.div
                       layoutId="activeNav"
-                      className="absolute bottom-0 inset-x-0 h-0.5 bg-gradient-to-r from-gold-500 to-amber-300 rounded-full"
+                      className="absolute bottom-0 inset-x-1 h-px bg-gradient-to-r from-gold-500 to-amber-300 rounded-full"
                     />
                   )}
+                  {!isActive && <span className="absolute bottom-0 inset-x-1 h-px origin-left scale-x-0 bg-gold-400 transition-transform duration-300 group-hover:scale-x-100" />}
                 </Link>
               );
             })}
@@ -154,20 +167,20 @@ export const Navbar: React.FC = () => {
             {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors flex items-center gap-2"
+              className="p-2.5 text-gray-300 hover:text-gold-400 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center gap-2 group"
               aria-label="Search catalog"
             >
-              <Search className="w-4 h-4" />
-              <span className="hidden xl:inline text-xs text-gray-400">Search catalog...</span>
+              <Search className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
+              <span className="hidden 2xl:inline text-xs text-gray-400 group-hover:text-gray-200">Search catalog...</span>
             </button>
 
             {/* Wishlist Link */}
             <Link
               href="/wishlist"
-              className="relative p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+              className="group relative p-2.5 text-gray-300 hover:text-gold-400 hover:bg-white/5 rounded-xl transition-all duration-200"
               aria-label="View saved items"
             >
-              <Heart className="w-4 h-4" />
+              <Heart className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
               {wishlistCount > 0 && (
                 <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
                   {wishlistCount}
@@ -178,7 +191,7 @@ export const Navbar: React.FC = () => {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors flex items-center gap-2 group"
+              className="relative p-2.5 text-gray-300 hover:text-gold-400 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center gap-2 group"
               aria-label="Open shopping bag"
             >
               <div className="relative">
@@ -195,7 +208,7 @@ export const Navbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-1.5 p-1.5 sm:px-3 sm:py-1.5 rounded-xl bg-surface-100 hover:bg-surface-50 border border-border-light text-xs font-semibold text-gray-200 transition-colors"
+                className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl bg-[#121722]/85 hover:bg-[#19202d] border border-white/10 hover:border-gold-400/35 text-xs font-semibold text-gray-200 shadow-sm transition-all duration-200"
               >
                 <User className="w-4 h-4 text-gold-400" />
                 <span className="hidden sm:inline max-w-[100px] truncate">
@@ -421,7 +434,7 @@ export const Navbar: React.FC = () => {
       {/* Mobile Drawer Menu */}
       <AnimatePresence>
         {isMobileMenuOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden">
+          <div className="fixed inset-0 z-50 xl:hidden">
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -439,8 +452,9 @@ export const Navbar: React.FC = () => {
             >
               <div>
                 <div className="flex items-center justify-between pb-6 border-b border-border-light">
-                  <span className="text-lg font-bold tracking-wider text-white uppercase font-display">
-                    LUXE<span className="text-gold-400 font-light ml-1">ATELIER</span>
+                  <span className="leading-none uppercase font-display">
+                    <span className="block text-lg font-extrabold tracking-[0.12em] text-white">LUXE <span className="font-medium text-gold-400">ATELIER</span></span>
+                    <span className="block mt-1 text-[8px] font-bold tracking-[0.32em] text-gold-400/90">HOME</span>
                   </span>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
