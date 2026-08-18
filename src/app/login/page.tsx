@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, CheckCircle, Mail, Lock, User, Eye, EyeOff } from 'lucide-react';
@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { useAuth } from '@/context/AuthContext';
 
-export default function LoginPage() {
+function LoginPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { login, register, resendVerification } = useAuth();
@@ -286,5 +286,13 @@ export default function LoginPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function LoginPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+            <LoginPageContent />
+        </Suspense>
     );
 }

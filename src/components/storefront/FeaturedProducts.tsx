@@ -18,7 +18,7 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products }) 
 
   const filteredProducts = products.filter((p) => {
     if (activeTab === 'bestsellers') return p.isBestSeller || p.badge === 'BEST SELLER';
-    if (activeTab === 'new') return p.isNew || p.badge === 'NEW';
+    if (activeTab === 'new') return p.isNewArrival || p.badge === 'NEW';
     if (activeTab === 'limited') return p.badge === 'LIMITED' || p.badge === 'SALE';
     return true;
   });

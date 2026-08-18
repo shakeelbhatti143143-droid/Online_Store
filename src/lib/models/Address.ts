@@ -31,7 +31,6 @@ const AddressSchema = new Schema<IAddress>(
   { timestamps: true, collection: 'addresses' }
 );
 
-AddressSchema.index({ userId: 1 });
 
 const Address: Model<IAddress> =
   (mongoose.models.Address as Model<IAddress>) || mongoose.model<IAddress>('Address', AddressSchema);

@@ -28,7 +28,6 @@ const OrderItemSchema = new Schema<IOrderItem>(
   { timestamps: { createdAt: true, updatedAt: false }, collection: 'order_items' }
 );
 
-OrderItemSchema.index({ orderId: 1 });
 
 const OrderItem: Model<IOrderItem> =
   (mongoose.models.OrderItem as Model<IOrderItem>) ||

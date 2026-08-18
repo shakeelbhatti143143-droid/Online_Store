@@ -184,7 +184,7 @@ export function mapProduct(params: {
     reviewsCount: Number(product.reviewsCount) || 0,
     isFeatured: Boolean(product.isFeatured),
     isBestSeller: Boolean(product.isBestSeller),
-    isNew: Boolean(product.isNew),
+    isNewArrival: Boolean(product.isNewArrival),
     badge: product.badge || undefined,
     tags: product.tags || [],
     features: product.features || [],

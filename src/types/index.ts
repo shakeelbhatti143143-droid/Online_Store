@@ -78,7 +78,7 @@ export interface Product {
   reviewsCount: number;
   isFeatured: boolean;
   isBestSeller: boolean;
-  isNew: boolean;
+  isNewArrival: boolean;
   badge?: ProductBadge;
   tags: string[];
   features: string[];

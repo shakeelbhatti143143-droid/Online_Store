@@ -29,7 +29,6 @@ const ProductVariantSchema = new Schema<IProductVariant>(
 );
 
 ProductVariantSchema.index({ sku: 1 }, { unique: true, sparse: true });
-ProductVariantSchema.index({ productId: 1 });
 
 const ProductVariant: Model<IProductVariant> =
   (mongoose.models.ProductVariant as Model<IProductVariant>) ||

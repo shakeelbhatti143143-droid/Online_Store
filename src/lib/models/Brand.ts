@@ -20,9 +20,6 @@ const BrandSchema = new Schema<IBrand>(
   { timestamps: { createdAt: true, updatedAt: false }, collection: 'brands' }
 );
 
-BrandSchema.index({ slug: 1 }, { unique: true });
-BrandSchema.index({ name: 1 }, { unique: true });
-
 const Brand: Model<IBrand> =
   (mongoose.models.Brand as Model<IBrand>) || mongoose.model<IBrand>('Brand', BrandSchema);
 

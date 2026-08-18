@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import { isAuthUser, mongoErrorResponse, requireStaff } from '@/lib/auth-server';
 import { storeDb } from '@/lib/data/store-db';

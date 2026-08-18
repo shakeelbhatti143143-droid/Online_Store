@@ -4,7 +4,8 @@ import { CategoryShowcase } from '@/components/storefront/CategoryShowcase';
 import { FeaturedProducts } from '@/components/storefront/FeaturedProducts';
 import { DealsBanner } from '@/components/storefront/DealsBanner';
 
-export const revalidate = 60; // 1 minute ISR revalidation
+// The catalog is fetched from MongoDB and must be rendered at request time.
+export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
   const products = await storeDb.getProducts();

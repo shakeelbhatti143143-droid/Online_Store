@@ -30,8 +30,6 @@ const CouponSchema = new Schema<ICoupon>(
   { timestamps: { createdAt: true, updatedAt: false }, collection: 'coupons' }
 );
 
-CouponSchema.index({ code: 1 }, { unique: true });
-
 const Coupon: Model<ICoupon> =
   (mongoose.models.Coupon as Model<ICoupon>) || mongoose.model<ICoupon>('Coupon', CouponSchema);
 

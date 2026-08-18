@@ -88,7 +88,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 48,
     isFeatured: true,
     isBestSeller: true,
-    isNew: false,
+    isNewArrival: false,
     badge: 'BEST SELLER',
     tags: ['luxury', 'watch', 'automatic', 'titanium', 'swiss'],
     features: [
@@ -137,7 +137,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 76,
     isFeatured: true,
     isBestSeller: true,
-    isNew: true,
+    isNewArrival: true,
     badge: 'NEW',
     tags: ['audio', 'planar magnetic', 'headphones', 'anc', 'lossless'],
     features: [
@@ -185,7 +185,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 39,
     isFeatured: true,
     isBestSeller: false,
-    isNew: true,
+    isNewArrival: true,
     badge: 'NEW',
     tags: ['footwear', 'running', 'carbon fiber', 'sneakers', 'design'],
     features: [
@@ -234,7 +234,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 31,
     isFeatured: true,
     isBestSeller: true,
-    isNew: false,
+    isNewArrival: false,
     badge: 'BEST SELLER',
     tags: ['apparel', 'jacket', 'japanese', 'selvedge', 'waxed canvas'],
     features: [
@@ -282,7 +282,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 52,
     isFeatured: true,
     isBestSeller: true,
-    isNew: false,
+    isNewArrival: false,
     badge: 'LIMITED',
     tags: ['leather', 'travel', 'weekender', 'bag', 'florence'],
     features: [
@@ -328,7 +328,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 41,
     isFeatured: true,
     isBestSeller: false,
-    isNew: true,
+    isNewArrival: true,
     badge: 'SALE',
     tags: ['smarthome', 'lighting', 'magsafe', 'desk', 'minimalist'],
     features: [
@@ -373,7 +373,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 19,
     isFeatured: true,
     isBestSeller: false,
-    isNew: true,
+    isNewArrival: true,
     badge: 'LIMITED',
     tags: ['tourbillon', 'luxury', 'skeleton', 'geneve'],
     features: [
@@ -416,7 +416,7 @@ export const INITIAL_PRODUCTS: Product[] = [
     reviewsCount: 28,
     isFeatured: false,
     isBestSeller: true,
-    isNew: false,
+    isNewArrival: false,
     badge: 'BEST SELLER',
     tags: ['speakers', 'audio', 'walnut', 'audiophile', 'wireless'],
     features: [
@@ -621,4 +621,3 @@ export const INITIAL_ORDERS: Order[] = [
     updatedAt: '2026-08-16T08:00:00Z',
   }
 ];
-

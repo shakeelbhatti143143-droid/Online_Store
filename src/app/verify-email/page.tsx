@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { Sparkles, CheckCircle, XCircle, Clock, Mail } from 'lucide-react';
@@ -10,7 +10,7 @@ import { useAuth } from '@/context/AuthContext';
 
 type VerificationState = 'verifying' | 'success' | 'expired' | 'invalid' | 'already-verified';
 
-export default function VerifyEmailPage() {
+function VerifyEmailPageContent() {
     const searchParams = useSearchParams();
     const router = useRouter();
     const { resendVerification } = useAuth();
@@ -192,5 +192,13 @@ export default function VerifyEmailPage() {
                 </div>
             </div>
         </div>
+    );
+}
+
+export default function VerifyEmailPage() {
+    return (
+        <Suspense fallback={<div className="min-h-screen bg-background" />}>
+            <VerifyEmailPageContent />
+        </Suspense>
     );
 }

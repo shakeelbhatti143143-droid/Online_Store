@@ -16,7 +16,7 @@ export interface IProduct {
   reviewsCount: number;
   isFeatured: boolean;
   isBestSeller: boolean;
-  isNew: boolean;
+  isNewArrival: boolean;
   isActive: boolean;
   badge?: string;
   tags: string[];
@@ -118,7 +118,7 @@ const ProductSchema = new Schema<IProduct>(
       default: false,
     },
 
-    isNew: {
+    isNewArrival: {
       type: Boolean,
       default: true,
     },
@@ -155,14 +155,12 @@ const ProductSchema = new Schema<IProduct>(
 );
 
 // Indexes
-ProductSchema.index({ slug: 1 }, { unique: true });
-ProductSchema.index({ sku: 1 }, { unique: true });
 ProductSchema.index({ categoryId: 1 });
 ProductSchema.index({ brandId: 1 });
 ProductSchema.index({ price: 1 });
 ProductSchema.index({ isFeatured: 1 });
 ProductSchema.index({ isBestSeller: 1 });
-ProductSchema.index({ isNew: 1 });
+ProductSchema.index({ isNewArrival: 1 });
 ProductSchema.index({ isActive: 1 });
 
 // Reuse existing model during Next.js hot reload

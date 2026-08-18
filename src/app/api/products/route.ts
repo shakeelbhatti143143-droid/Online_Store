@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
       products = products.filter((p) => p.categoryId === category || p.slug === category || p.categoryName?.toLowerCase().includes(category.toLowerCase()));
     }
     if (badge) {
-      products = products.filter((p) => p.badge === badge || (badge === 'NEW' && p.isNew) || (badge === 'BEST SELLER' && p.isBestSeller));
+      products = products.filter((p) => p.badge === badge || (badge === 'NEW' && p.isNewArrival) || (badge === 'BEST SELLER' && p.isBestSeller));
     }
     if (query) {
       const q = query.toLowerCase().trim();

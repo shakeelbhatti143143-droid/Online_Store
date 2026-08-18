@@ -25,8 +25,6 @@ const CategorySchema = new Schema<ICategory>(
   { timestamps: true, collection: 'categories' }
 );
 
-CategorySchema.index({ slug: 1 }, { unique: true });
-CategorySchema.index({ name: 1 }, { unique: true });
 CategorySchema.index({ displayOrder: 1 });
 
 const Category: Model<ICategory> =

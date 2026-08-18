@@ -89,7 +89,7 @@ function ShopContent() {
 
       // Badge
       if (selectedBadge && product.badge !== selectedBadge) {
-        if (selectedBadge === 'NEW' && !product.isNew) return false;
+        if (selectedBadge === 'NEW' && !product.isNewArrival) return false;
         if (selectedBadge === 'BEST SELLER' && !product.isBestSeller) return false;
       }
 
