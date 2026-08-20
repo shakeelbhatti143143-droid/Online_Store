@@ -5,6 +5,7 @@ import { AppProviders } from '@/components/providers/AppProviders';
 import { Navbar } from '@/components/layout/Navbar';
 import { Footer } from '@/components/layout/Footer';
 import { CartDrawer } from '@/components/cart/CartDrawer';
+import PublicChatWidget from '@/components/chatbot/PublicChatWidget';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -20,8 +21,16 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: 'LUXE ATELIER | Curated Luxury E-Commerce Platform',
-  description: 'Precision engineered Swiss horology, audiophile planar monitors, artisan leather goods, and minimalist luxury essentials.',
-  keywords: ['luxury store', 'swiss watches', 'audiophile headphones', 'leather goods', 'high-end audio', 'premium fashion'],
+  description:
+    'Precision engineered Swiss horology, audiophile planar monitors, artisan leather goods, and minimalist luxury essentials.',
+  keywords: [
+    'luxury store',
+    'swiss watches',
+    'audiophile headphones',
+    'leather goods',
+    'high-end audio',
+    'premium fashion',
+  ],
   authors: [{ name: 'Luxe Atelier International' }],
   icons: {
     icon: '/favicon.ico',
@@ -38,10 +47,16 @@ export default function RootLayout({
       <body className="bg-background text-gray-100 min-h-screen flex flex-col antialiased selection:bg-gold-500 selection:text-black">
         <AppProviders>
           <Navbar />
+
           <main className="flex-1">
             {children}
           </main>
+
           <CartDrawer />
+
+          {/* Public Chatbot Widget */}
+          <PublicChatWidget />
+
           <Footer />
         </AppProviders>
       </body>

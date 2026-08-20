@@ -41,7 +41,6 @@ async function connectDB() {
     if (!cached.promise) {
         cached.promise = mongoose
             .connect(MONGODB_URI, {
-                dbName: "Online_store",
                 serverSelectionTimeoutMS: 8000,
                 bufferCommands: false,
             })

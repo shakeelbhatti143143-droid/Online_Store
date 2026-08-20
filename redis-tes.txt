@@ -1,0 +1,37 @@
+import { redisCache } from "@/lib/cache";
+
+export async function GET() {
+  try {
+    const testKey = "redis:test";
+    const testValue = {
+      message: "Redis is working!",
+      time: new Date().toISOString(),
+    };
+
+    // Store
+    await redisCache.set(testKey, testValue, 300);
+
+    // Read
+    const result = await redisCache.get(testKey);
+
+    // Delete
+    await redisCache.del(testKey);
+
+    return Response.json({
+      success: true,
+      message: "Cache test completed",
+      stored: testValue,
+      retrieved: result,
+    });
+  } catch (error) {
+    console.error("Redis test error:", error);
+
+    return Response.json(
+      {
+        success: false,
+        error: "Redis test failed",
+      },
+      { status: 500 }
+    );
+  }
+}

@@ -18,7 +18,19 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: '*.supabase.co',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'tse1.mm.bing.net',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.bing.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
     ],
   },
 };

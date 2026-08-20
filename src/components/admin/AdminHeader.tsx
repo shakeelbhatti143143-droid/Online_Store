@@ -103,15 +103,7 @@ export const AdminHeader: React.FC<AdminHeaderProps> = ({ isCollapsed, onOpenAi 
         </button>
 
         {/* AI Assistant Quick Trigger */}
-        {onOpenAi && (
-          <button
-            onClick={onOpenAi}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/20 to-purple-500/20 hover:from-cyan-500/30 hover:to-purple-500/30 border border-cyan-500/40 text-xs font-bold text-cyan-300 transition-all shadow-md shadow-cyan-500/10"
-          >
-            <Bot className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">AI Assistant</span>
-          </button>
-        )}
+
 
         {/* Notifications Trigger */}
         <div className="relative">

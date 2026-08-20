@@ -3,6 +3,7 @@ import { HeroSection } from '@/components/storefront/HeroSection';
 import { CategoryShowcase } from '@/components/storefront/CategoryShowcase';
 import { FeaturedProducts } from '@/components/storefront/FeaturedProducts';
 import { DealsBanner } from '@/components/storefront/DealsBanner';
+import PublicChatbot from '@/app/components/chatbot/PublicChatbot';
 
 // The catalog is fetched from MongoDB and must be rendered at request time.
 export const dynamic = 'force-dynamic';
@@ -23,6 +24,9 @@ export default async function HomePage() {
 
       {/* 4. Limited-Time Vault Deals Banner */}
       <DealsBanner />
+
+      {/* 5. Public AI Chatbot */}
+      <PublicChatbot />
     </div>
   );
 }
