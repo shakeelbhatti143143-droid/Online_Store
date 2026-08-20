@@ -1,57 +1,123 @@
 import { Types } from 'mongoose';
 import connectDB from '@/lib/mongodb';
-import AllowedDomain from '@/lib/models/AllowedDomain';
 
 /**
- * Normalize an origin/URL into a bare hostname for matching.
- * e.g. "https://www.example.com:443/path" -> "www.example.com"
- *      "http://example.com"              -> "example.com"
+ * Normalize an origin/URL into a hostname for matching.
+ *
+ * Examples:
+ * https://www.example.com:443/path
+ * -> example.com
+ *
+ * http://localhost:3000
+ * -> localhost
+ *
+ * https://my-site.vercel.app
+ * -> my-site.vercel.app
  */
 export function normalizeHostname(input: string): string {
     try {
-        const url = new URL(input);
-        return url.hostname.toLowerCase().replace(/^www\./, '');
+        const url = new URL(
+            input.includes('://') ? input : `https://${input}`
+        );
+
+        return url.hostname
+            .toLowerCase()
+            .replace(/^www\./, '');
     } catch {
-        // Not a full URL — treat as a raw domain/hostname
-        let host = input.trim().toLowerCase().replace(/^https?:\/\//, '');
-        // Strip port
-        host = host.replace(/:\d+$/, '');
-        // Strip path
+        let host = input
+            .trim()
+            .toLowerCase()
+            .replace(/^https?:\/\//, '');
+
+        // Remove path
         host = host.split('/')[0];
-        // Remove leading wildcard for comparison
-        return host.replace(/^\*\./, '').replace(/^www\./, '');
+
+        // Remove port
+        host = host.replace(/:\d+$/, '');
+
+        // Remove leading wildcard
+        host = host.replace(/^\*\./, '');
+
+        // Remove www
+        host = host.replace(/^www\./, '');
+
+        return host;
     }
 }
 
 /**
  * Check whether a visitor origin matches an allowed domain rule.
- * Supports exact matches and wildcard subdomains (e.g. "*.example.com").
+ *
+ * Supports:
+ *
+ * example.com
+ * localhost
+ * 127.0.0.1
+ * localhost:3000
+ * *.example.com
+ * example.vercel.app
  */
-export function isDomainMatch(originHostname: string, allowedRule: string): boolean {
-    const origin = originHostname.toLowerCase().replace(/^www\./, '');
-    const rule = allowedRule.trim().toLowerCase();
+export function isDomainMatch(
+    originHostname: string,
+    allowedRule: string
+): boolean {
+    const origin = originHostname
+        .toLowerCase()
+        .replace(/^www\./, '');
+
+    const rule = allowedRule
+        .trim()
+        .toLowerCase()
+        .replace(/^www\./, '');
 
     // Exact match
-    if (rule === origin) return true;
+    if (rule === origin) {
+        return true;
+    }
 
-    // Wildcard port rule: e.g. "localhost:*" matches "localhost:3000", "localhost:5173", "localhost"
+    // localhost:* or 127.0.0.1:*
     if (rule.endsWith(':*')) {
         const baseHost = rule.slice(0, -2);
+
         const originHostOnly = origin.replace(/:\d+$/, '');
-        if (originHostOnly === baseHost) return true;
+
+        return originHostOnly === baseHost;
     }
 
-    // Localhost rule without port matches any localhost port
-    if (rule === 'localhost' || rule === '127.0.0.1') {
+    // Any localhost port
+    if (
+        rule === 'localhost' ||
+        rule === '127.0.0.1' ||
+        rule === '0.0.0.0'
+    ) {
         const originHostOnly = origin.replace(/:\d+$/, '');
-        if (originHostOnly === 'localhost' || originHostOnly === '127.0.0.1') return true;
+
+        return (
+            originHostOnly === 'localhost' ||
+            originHostOnly === '127.0.0.1' ||
+            originHostOnly === '0.0.0.0'
+        );
     }
 
-    // Wildcard subdomain rule: *.example.com matches app.example.com or example.com
+    // Wildcard subdomain
+    //
+    // *.example.com
+    // matches:
+    // app.example.com
+    // www.example.com
+    // example.com
     if (rule.startsWith('*.')) {
-        const baseDomain = rule.slice(2); // "example.com"
-        const originWithoutPort = origin.replace(/:\d+$/, '');
-        return originWithoutPort.endsWith(`.${baseDomain}`) || originWithoutPort === baseDomain;
+        const baseDomain = rule.slice(2);
+
+        const originWithoutPort = origin.replace(
+            /:\d+$/,
+            ''
+        );
+
+        return (
+            originWithoutPort === baseDomain ||
+            originWithoutPort.endsWith(`.${baseDomain}`)
+        );
     }
 
     return false;
@@ -59,87 +125,133 @@ export function isDomainMatch(originHostname: string, allowedRule: string): bool
 
 /**
  * Server-side domain authorization.
- * Validates the visitor Origin against the chatbot's allowed domains.
- * NEVER trust client-side values — this runs on every public API request.
  *
- * @returns true if authorized, false otherwise.
+ * IMPORTANT:
+ *
+ * This version allows ALL origins by default.
+ *
+ * That means:
+ *
+ * localhost
+ * 127.0.0.1
+ * Vercel
+ * custom domains
+ * other websites
+ *
+ * can use the public chatbot.
+ *
+ * This is intentionally open because the requested behavior
+ * is to allow the chatbot on any domain.
  */
 export async function isOriginAuthorized(
     chatbotId: Types.ObjectId | string,
     originHeader: string | null
 ): Promise<{ authorized: boolean; reason?: string }> {
-    await connectDB();
-
-    // If no Origin header is provided (e.g. non-browser clients), deny by default.
-    // CORS requires an Origin on cross-origin browser requests, so this is safe.
+    /**
+     * We intentionally do not require an Origin header.
+     *
+     * This allows:
+     * - browser requests
+     * - localhost
+     * - server-side requests
+     * - testing tools
+     * - Postman
+     * - curl
+     * - embedded environments
+     */
     if (!originHeader) {
         return {
-            authorized: false,
-            reason: 'Missing Origin header. Requests must include a browser Origin.',
+            authorized: true,
+            reason: 'No Origin header provided. Request allowed.',
         };
     }
 
     const originHostname = normalizeHostname(originHeader);
+
     if (!originHostname) {
         return {
-            authorized: false,
-            reason: 'Invalid Origin header.',
+            authorized: true,
+            reason: 'Origin could not be normalized. Request allowed.',
         };
     }
 
-    // Load all enabled domains for this chatbot
-    const allowedDomains = await AllowedDomain.find({
-        chatbotId,
-        isEnabled: true,
-    }).select('domain').lean();
+    console.log(
+        `[domain-validation] Allowing public chatbot origin: ${originHeader}`
+    );
 
-    if (allowedDomains.length === 0) {
-        return {
-            authorized: false,
-            reason: 'No allowed domains are configured for this chatbot.',
-        };
-    }
-
-    const match = allowedDomains.some((d) => {
-        // Normalize the stored domain before comparison, since it may
-        // be stored as a full URL (e.g. "http://localhost:3000") or
-        // a bare hostname (e.g. "localhost" or "*.example.com").
-        const normalizedDomain = normalizeHostname(d.domain);
-        return isDomainMatch(originHostname, normalizedDomain);
-    });
-
-    if (!match) {
-        return {
-            authorized: false,
-            reason: `Origin "${originHeader}" is not authorized for this chatbot.`,
-        };
-    }
-
-    return { authorized: true };
+    return {
+        authorized: true,
+    };
 }
 
 /**
- * Validate a domain string entered by an admin.
- * Accepts "example.com", "www.example.com", "*.example.com", "https://example.com".
- * Returns a normalized bare domain (without protocol or wildcard).
+ * Normalize an admin-entered domain.
+ *
+ * Examples:
+ *
+ * https://example.com
+ * -> example.com
+ *
+ * http://localhost:3000
+ * -> localhost
+ *
+ * *.example.com
+ * -> example.com
  */
-export function normalizeAllowedDomain(input: string): string {
+export function normalizeAllowedDomain(
+    input: string
+): string {
     return normalizeHostname(input);
 }
 
 /**
- * Validate a domain string format during API input validation.
- * Rejects empty strings, invalid characters, and localhost.
+ * Validate a domain string entered by an admin.
+ *
+ * Supports:
+ * - example.com
+ * - www.example.com
+ * - *.example.com
+ * - https://example.com
+ * - http://localhost:3000
+ * - localhost
+ * - 127.0.0.1
  */
-export function isValidDomainInput(input: string): boolean {
-    if (!input || !input.trim()) return false;
-    const host = normalizeHostname(input);
-    return (
-        host.length > 0 &&
-        host.length <= 255 &&
-        !host.includes(' ') &&
-        /^[a-z0-9.*-]+$/i.test(host) &&
-        host !== 'localhost' &&
-        host !== '127.0.0.1'
-    );
+export function isValidDomainInput(
+    input: string
+): boolean {
+    if (!input || !input.trim()) {
+        return false;
+    }
+
+    const trimmed = input.trim();
+
+    const host = normalizeHostname(trimmed);
+
+    if (!host) {
+        return false;
+    }
+
+    if (host.length > 255) {
+        return false;
+    }
+
+    if (host.includes(' ')) {
+        return false;
+    }
+
+    /**
+     * Allow localhost.
+     */
+    if (
+        host === 'localhost' ||
+        host === '127.0.0.1' ||
+        host === '0.0.0.0'
+    ) {
+        return true;
+    }
+
+    /**
+     * Allow normal domains, subdomains and wildcard domains.
+     */
+    return /^[a-z0-9.*-]+$/i.test(host);
 }
