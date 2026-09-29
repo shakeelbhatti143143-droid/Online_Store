@@ -31,16 +31,16 @@ export const TrendingProducts: React.FC<TrendingProductsProps> = ({ products }) 
               <Flame className="w-3.5 h-3.5" />
               <span>Trending Now</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight font-display">
               Popular & Most Coveted
             </h2>
           </div>
           <Link
             href="/shop?badge=NEW"
-            className="text-xs font-bold text-slate-700 hover:text-amber-700 uppercase tracking-wider flex items-center gap-1 transition-colors group"
+            className="text-xs font-bold text-slate-700 dark:text-slate-300 hover:text-amber-700 dark:hover:text-amber-400 uppercase tracking-wider flex items-center gap-1 transition-colors group"
           >
             <span>View All New Arrivals</span>
-            <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
+            <ArrowRight className="w-4 h-4 text-amber-600 dark:text-amber-400 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 

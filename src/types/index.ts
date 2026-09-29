@@ -6,6 +6,14 @@ export interface UserProfile {
   fullName: string;
   avatarUrl?: string;
   phone?: string;
+  bio?: string;
+  title?: string;
+  dateOfBirth?: string;
+  preferredCurrency?: string;
+  newsletterSubscribed?: boolean;
+  orderNotifications?: boolean;
+  vipOffers?: boolean;
+  securityAlerts?: boolean;
   role: UserRole;
   createdAt: string;
   emailVerified: boolean;

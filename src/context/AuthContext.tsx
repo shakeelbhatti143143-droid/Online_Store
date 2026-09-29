@@ -12,7 +12,7 @@ interface AuthContextType {
   login: (email: string, password: string) => Promise<boolean>;
   register: (email: string, fullName: string, password: string) => Promise<boolean>;
   logout: () => Promise<void>;
-  updateProfile: (updates: Partial<UserProfile>) => void;
+  updateProfile: (updates: Partial<UserProfile>) => Promise<boolean>;
   resendVerification: (email: string) => Promise<boolean>;
 }
 
@@ -230,8 +230,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   }, [user, showToast]);
 
   const updateProfile = useCallback(
-    async (updates: Partial<UserProfile>) => {
-      if (!user) return;
+    async (updates: Partial<UserProfile>): Promise<boolean> => {
+      if (!user) return false;
       try {
         const token = localStorage.getItem(TOKEN_KEY);
         const res = await fetch('/api/auth/me', {
@@ -240,7 +240,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             'Content-Type': 'application/json',
             ...(token ? { Authorization: `Bearer ${token}` } : {}),
           },
-          body: JSON.stringify({ fullName: updates.fullName, phone: updates.phone, avatarUrl: updates.avatarUrl }),
+          body: JSON.stringify(updates),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || 'Unable to update profile');
@@ -251,12 +251,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           title: 'Profile Updated',
           message: 'Your personal information was saved.',
         });
+        return true;
       } catch (error) {
         showToast({
           type: 'error',
           title: 'Profile',
           message: error instanceof Error ? error.message : 'Unable to update profile.',
         });
+        return false;
       }
     },
     [user, showToast]

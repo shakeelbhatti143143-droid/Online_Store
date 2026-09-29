@@ -52,8 +52,17 @@ export async function PATCH(request: NextRequest) {
     if (typeof body.fullName === 'string' && body.fullName.trim().length >= 2) {
       user.fullName = body.fullName.trim();
     }
-    if (typeof body.phone === 'string') user.phone = body.phone;
-    if (typeof body.avatarUrl === 'string') user.avatarUrl = body.avatarUrl;
+    if (typeof body.phone === 'string') user.phone = body.phone.trim();
+    if (typeof body.avatarUrl === 'string') user.avatarUrl = body.avatarUrl.trim();
+    if (typeof body.bio === 'string') user.bio = body.bio.trim();
+    if (typeof body.title === 'string') user.title = body.title.trim();
+    if (typeof body.dateOfBirth === 'string') user.dateOfBirth = body.dateOfBirth.trim();
+    if (typeof body.preferredCurrency === 'string') user.preferredCurrency = body.preferredCurrency.trim();
+    if (typeof body.newsletterSubscribed === 'boolean') user.newsletterSubscribed = body.newsletterSubscribed;
+    if (typeof body.orderNotifications === 'boolean') user.orderNotifications = body.orderNotifications;
+    if (typeof body.vipOffers === 'boolean') user.vipOffers = body.vipOffers;
+    if (typeof body.securityAlerts === 'boolean') user.securityAlerts = body.securityAlerts;
+
     await user.save();
 
     // Log admin profile updates
@@ -67,7 +76,9 @@ export async function PATCH(request: NextRequest) {
           details: {
             email: user.email,
             message: 'Admin profile updated',
-            updatedFields: Object.keys(body).filter(k => ['fullName', 'phone', 'avatarUrl'].includes(k)),
+            updatedFields: Object.keys(body).filter(k =>
+              ['fullName', 'phone', 'avatarUrl', 'bio', 'title', 'dateOfBirth', 'preferredCurrency'].includes(k)
+            ),
           },
         });
       } catch (logErr) {

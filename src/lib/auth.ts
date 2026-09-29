@@ -37,6 +37,14 @@ export function toUserProfile(user: {
     fullName: string;
     avatarUrl?: string;
     phone?: string;
+    bio?: string;
+    title?: string;
+    dateOfBirth?: string;
+    preferredCurrency?: string;
+    newsletterSubscribed?: boolean;
+    orderNotifications?: boolean;
+    vipOffers?: boolean;
+    securityAlerts?: boolean;
     role: string;
     createdAt: string | Date;
     emailVerified?: boolean;
@@ -45,10 +53,18 @@ export function toUserProfile(user: {
         id: String(user._id),
         email: user.email,
         fullName: user.fullName,
-        avatarUrl: user.avatarUrl,
-        phone: user.phone,
+        avatarUrl: user.avatarUrl || '',
+        phone: user.phone || '',
+        bio: user.bio || '',
+        title: user.title || '',
+        dateOfBirth: user.dateOfBirth || '',
+        preferredCurrency: user.preferredCurrency || 'USD',
+        newsletterSubscribed: user.newsletterSubscribed ?? true,
+        orderNotifications: user.orderNotifications ?? true,
+        vipOffers: user.vipOffers ?? true,
+        securityAlerts: user.securityAlerts ?? true,
         role: user.role as UserProfile['role'],
-        createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : user.createdAt,
+        createdAt: user.createdAt instanceof Date ? user.createdAt.toISOString() : (user.createdAt ? String(user.createdAt) : new Date().toISOString()),
         emailVerified: user.emailVerified ?? false,
     };
 }

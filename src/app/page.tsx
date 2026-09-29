@@ -19,7 +19,7 @@ export default async function HomePage() {
   const featuredProduct = products.find((p) => p.isFeatured) || products[0];
 
   return (
-    <div className="flex flex-col min-h-screen bg-white">
+    <div className="flex flex-col min-h-screen bg-white dark:bg-[#070B12] transition-colors duration-300">
       {/* 1. Large Hero Banner */}
       <HeroSection product={featuredProduct} />
 

@@ -7,6 +7,14 @@ export interface IUser extends Document {
   password: string;
   avatarUrl?: string;
   phone?: string;
+  bio?: string;
+  title?: string;
+  dateOfBirth?: string;
+  preferredCurrency?: string;
+  newsletterSubscribed?: boolean;
+  orderNotifications?: boolean;
+  vipOffers?: boolean;
+  securityAlerts?: boolean;
   role: UserRole;
   isActive: boolean;
   createdAt: Date;
@@ -44,6 +52,14 @@ const UserSchema = new Schema<IUser>(
     },
     avatarUrl: { type: String, default: '' },
     phone: { type: String, default: '' },
+    bio: { type: String, default: '' },
+    title: { type: String, default: '' },
+    dateOfBirth: { type: String, default: '' },
+    preferredCurrency: { type: String, default: 'USD' },
+    newsletterSubscribed: { type: Boolean, default: true },
+    orderNotifications: { type: Boolean, default: true },
+    vipOffers: { type: Boolean, default: true },
+    securityAlerts: { type: Boolean, default: true },
     role: {
       type: String,
       enum: ['user', 'admin'],

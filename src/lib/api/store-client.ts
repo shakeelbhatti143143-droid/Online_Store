@@ -128,6 +128,10 @@ export const storeApi = {
     const data = await parseJson(await fetch('/api/addresses', { method: 'POST', headers: authHeaders(true), body: JSON.stringify(body) }));
     return data.data;
   },
+  async deleteAddress(id: string): Promise<boolean> {
+    await parseJson(await fetch(`/api/addresses/${encodeURIComponent(id)}`, { method: 'DELETE', headers: authHeaders() }));
+    return true;
+  },
 };
 
 export { authHeaders };
