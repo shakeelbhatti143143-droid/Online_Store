@@ -38,15 +38,18 @@ function getTransporter(): nodemailer.Transporter {
  * @param to         Recipient email address (already normalized).
  * @param token      The raw verification token (will be embedded in the URL).
  * @param expiresAt  The expiration Date of the token (for display).
+ * @param baseUrl    Optional base URL of the deployment (derived from incoming request).
  */
 export async function sendVerificationEmail(
     to: string,
     token: string,
-    expiresAt: Date
+    expiresAt: Date,
+    baseUrl?: string
 ): Promise<void> {
     const transporter = getTransporter();
 
-    const verificationUrl = `${APP_URL}/verify-email?token=${token}`;
+    const rootUrl = (baseUrl || APP_URL).replace(/\/+$/, '');
+    const verificationUrl = `${rootUrl}/verify-email?token=${token}`;
 
     const html = renderVerificationEmail({
         siteName: SITE_NAME,
@@ -55,7 +58,7 @@ export async function sendVerificationEmail(
         expiresAt,
     });
 
-    const from = EMAIL_FROM || SMTP_USER;
+    const from = EMAIL_FROM || (SMTP_USER ? `"${SITE_NAME}" <${SMTP_USER}>` : 'noreply@luxury.com');
 
     await transporter.sendMail({
         from,

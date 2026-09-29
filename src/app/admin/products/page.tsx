@@ -619,11 +619,11 @@ function ProductsAdminContent() {
       {/* FILTER BAR */}
       {/* =================================================== */}
 
-      <div className="p-4 rounded-2xl glass-panel border border-border-light bg-surface-200/90 flex flex-col md:flex-row items-center justify-between gap-4">
+      <div className="admin-panel p-4 flex flex-col md:flex-row items-center justify-between gap-4">
 
         <div className="relative w-full md:w-80">
 
-          <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
 
           <input
             type="text"
@@ -634,7 +634,7 @@ function ProductsAdminContent() {
                 e.target.value
               )
             }
-            className="w-full bg-surface-100 border border-border-light rounded-xl pl-10 pr-4 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-gold-500"
+            className="w-full admin-input pl-10 pr-4 py-2.5"
           />
 
         </div>
@@ -648,7 +648,7 @@ function ProductsAdminContent() {
                 e.target.value
               )
             }
-            className="bg-surface-100 border border-border-light text-white text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-gold-500"
+            className="admin-select px-3.5 py-2.5 font-bold"
           >
 
             <option value="">
@@ -673,7 +673,7 @@ function ProductsAdminContent() {
                 e.target.value
               )
             }
-            className="bg-surface-100 border border-border-light text-white text-xs font-semibold rounded-xl px-3 py-2 focus:outline-none focus:border-gold-500"
+            className="admin-select px-3.5 py-2.5 font-bold"
           >
 
             <option value="">
@@ -706,7 +706,7 @@ function ProductsAdminContent() {
       {/* PRODUCTS TABLE */}
       {/* =================================================== */}
 
-      <div className="rounded-3xl glass-panel border border-border-light bg-surface-200/90 overflow-hidden">
+      <div className="admin-panel overflow-hidden">
 
         <div className="overflow-x-auto">
 
@@ -714,7 +714,7 @@ function ProductsAdminContent() {
 
             <thead>
 
-              <tr className="text-gray-400 border-b border-border-subtle font-bold uppercase tracking-wider bg-surface-100/50">
+              <tr className="admin-table-head">
 
                 <th className="p-4">
                   Piece
@@ -748,7 +748,7 @@ function ProductsAdminContent() {
 
             </thead>
 
-            <tbody className="divide-y divide-border-subtle">
+            <tbody>
 
               {filteredProducts.map(
                 (product) => {
@@ -765,7 +765,7 @@ function ProductsAdminContent() {
                   return (
                     <tr
                       key={product.id}
-                      className="hover:bg-white/[0.01] transition-colors"
+                      className="admin-table-row"
                     >
 
                       {/* PRODUCT IMAGE */}
@@ -774,7 +774,7 @@ function ProductsAdminContent() {
 
                         <div className="flex items-center gap-3">
 
-                          <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-surface-100 shrink-0 border border-white/5">
+                          <div className="relative w-12 h-12 rounded-xl overflow-hidden bg-[#131B30] shrink-0 border border-white/10">
 
                             {product.images?.[0] ? (
                               <Image
@@ -789,7 +789,7 @@ function ProductsAdminContent() {
                                 unoptimized
                               />
                             ) : (
-                              <div className="w-full h-full flex items-center justify-center text-gray-500">
+                              <div className="w-full h-full flex items-center justify-center text-slate-500">
                                 —
                               </div>
                             )}
@@ -798,18 +798,18 @@ function ProductsAdminContent() {
 
                           <div className="min-w-0 max-w-xs">
 
-                            <h4 className="text-xs font-bold text-white truncate">
+                            <h4 className="text-xs font-extrabold text-white truncate">
                               {product.title}
                             </h4>
 
-                            <p className="text-[11px] text-gray-400">
+                            <p className="text-[11px] text-slate-400 font-medium">
                               {product.brandName ||
                                 'Luxe Atelier'}
                             </p>
 
                             {product.images?.length >
                               1 && (
-                              <p className="text-[10px] text-gold-400 mt-0.5">
+                              <p className="text-[10px] text-amber-400 font-mono mt-0.5">
                                 {product.images.length}{' '}
                                 images
                               </p>
@@ -823,13 +823,13 @@ function ProductsAdminContent() {
 
                       {/* SKU */}
 
-                      <td className="p-4 font-mono text-gray-300">
+                      <td className="p-4 font-mono text-slate-300 text-xs">
                         {product.sku}
                       </td>
 
                       {/* CATEGORY */}
 
-                      <td className="p-4 text-gray-300">
+                      <td className="p-4 text-slate-300 font-medium">
                         {product.categoryName}
                       </td>
 
@@ -837,14 +837,14 @@ function ProductsAdminContent() {
 
                       <td className="p-4">
 
-                        <span className="font-bold text-white">
+                        <span className="font-extrabold text-amber-400 font-mono text-sm">
                           {formatPrice(
                             product.price
                           )}
                         </span>
 
                         {product.originalPrice && (
-                          <span className="text-[10px] text-gray-500 line-through ml-1.5">
+                          <span className="text-[10px] text-slate-500 line-through ml-1.5 font-mono">
                             {formatPrice(
                               product.originalPrice
                             )}
@@ -857,7 +857,7 @@ function ProductsAdminContent() {
 
                       <td className="p-4">
 
-                        <div className="flex items-center gap-1.5 font-semibold">
+                        <div className="flex items-center gap-2 font-bold">
 
                           <div
                             className={cn(
@@ -876,7 +876,7 @@ function ProductsAdminContent() {
                                 ? 'text-rose-400'
                                 : isLowStock
                                 ? 'text-amber-400'
-                                : 'text-gray-200'
+                                : 'text-slate-200'
                             )}
                           >
                             {
@@ -894,14 +894,11 @@ function ProductsAdminContent() {
                       <td className="p-4">
 
                         {product.badge ? (
-                          <Badge
-                            variant="gold"
-                            size="sm"
-                          >
+                          <span className="inline-flex items-center px-2 py-0.5 rounded text-[10px] font-extrabold bg-amber-500/20 text-amber-300 border border-amber-500/40 tracking-wider">
                             {product.badge}
-                          </Badge>
+                          </span>
                         ) : (
-                          <span className="text-gray-500">
+                          <span className="text-slate-600">
                             —
                           </span>
                         )}
@@ -912,12 +909,12 @@ function ProductsAdminContent() {
 
                       <td className="p-4 text-right">
 
-                        <div className="flex items-center justify-end gap-2">
+                        <div className="flex items-center justify-end gap-1.5">
 
                           <Link
                             href={`/products/${product.slug}`}
                             target="_blank"
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-surface-100"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-white/10 transition-colors"
                             title="View on live storefront"
                           >
                             <ExternalLink className="w-4 h-4" />
@@ -929,7 +926,7 @@ function ProductsAdminContent() {
                                 product
                               )
                             }
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-gold-400 hover:bg-surface-100"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
                             title="Edit product"
                           >
                             <Edit2 className="w-4 h-4" />
@@ -941,7 +938,7 @@ function ProductsAdminContent() {
                                 product
                               )
                             }
-                            className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-surface-100"
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer"
                             title="Delete product"
                           >
                             <Trash2 className="w-4 h-4" />

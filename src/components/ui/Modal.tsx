@@ -61,7 +61,7 @@ export const Modal: React.FC<ModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-black/80 backdrop-blur-md"
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm"
           />
 
           {/* Modal Content */}
@@ -71,7 +71,7 @@ export const Modal: React.FC<ModalProps> = ({
             exit={{ opacity: 0, scale: 0.95, y: 15 }}
             transition={{ duration: 0.2, ease: [0.16, 1, 0.3, 1] }}
             className={cn(
-              'relative w-full rounded-2xl glass-panel bg-surface border border-border-light shadow-2xl p-6 z-10 my-8',
+              'relative w-full rounded-2xl bg-white border border-slate-200 shadow-2xl p-6 z-10 my-8 text-slate-900',
               maxWClasses[maxWidth],
               className
             )}
@@ -80,15 +80,15 @@ export const Modal: React.FC<ModalProps> = ({
             <div className="flex items-start justify-between gap-4 mb-5">
               <div>
                 {typeof title === 'string' ? (
-                  <h3 className="text-xl font-semibold text-white tracking-tight">{title}</h3>
+                  <h3 className="text-xl font-bold text-slate-900 tracking-tight">{title}</h3>
                 ) : (
                   title
                 )}
-                {description && <p className="text-sm text-gray-400 mt-1">{description}</p>}
+                {description && <p className="text-sm text-slate-500 mt-1">{description}</p>}
               </div>
               <button
                 onClick={onClose}
-                className="rounded-lg p-1.5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
+                className="rounded-xl p-1.5 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
                 aria-label="Close modal"
               >
                 <X className="w-5 h-5" />

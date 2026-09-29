@@ -305,9 +305,9 @@ export default function AdminCategoriesPage() {
         {categories.map((cat) => (
           <div
             key={cat.id}
-            className="rounded-3xl glass-card border border-border-light overflow-hidden bg-surface-200/90 flex flex-col justify-between"
+            className="admin-card overflow-hidden flex flex-col justify-between"
           >
-            <div className="relative aspect-[16/10] w-full bg-surface-100">
+            <div className="relative aspect-[16/10] w-full bg-[#131B30]">
               <Image
                 src={cat.imageUrl}
                 alt={cat.name}
@@ -315,26 +315,26 @@ export default function AdminCategoriesPage() {
                 className="object-cover"
               />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#070B12] via-transparent to-transparent" />
 
-              <span className="absolute bottom-3 left-4 text-[11px] font-bold uppercase tracking-wider bg-black/60 px-2.5 py-1 rounded-full text-gold-400 border border-white/10">
+              <span className="absolute bottom-3 left-4 text-[11px] font-extrabold uppercase tracking-wider bg-black/70 px-3 py-1 rounded-full text-amber-300 border border-amber-500/30 shadow-md">
                 {cat.productCount || 0} Pieces
               </span>
             </div>
 
-            <div className="p-5 flex-1 flex flex-col justify-between space-y-3">
+            <div className="p-5 flex-1 flex flex-col justify-between space-y-4">
               <div>
-                <h3 className="text-base font-bold text-white">
+                <h3 className="text-base font-extrabold text-white">
                   {cat.name}
                 </h3>
 
-                <p className="text-xs text-gray-400 mt-1 line-clamp-2">
+                <p className="text-xs text-slate-400 mt-1 line-clamp-2">
                   {cat.description}
                 </p>
               </div>
 
-              <div className="pt-3 border-t border-border-subtle flex items-center justify-between">
-                <span className="text-[11px] font-mono text-gray-500">
+              <div className="pt-3 border-t border-white/10 flex items-center justify-between">
+                <span className="text-[11px] font-mono text-slate-400">
                   slug: {cat.slug}
                 </span>
 
@@ -343,7 +343,8 @@ export default function AdminCategoriesPage() {
                     onClick={() =>
                       handleOpenEdit(cat)
                     }
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-gold-400 hover:bg-surface-100"
+                    className="p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-amber-400 hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Edit category"
                   >
                     <Edit2 className="w-4 h-4" />
                   </button>
@@ -355,7 +356,8 @@ export default function AdminCategoriesPage() {
                         cat.name
                       )
                     }
-                    className="p-1.5 rounded-lg text-gray-400 hover:text-rose-400 hover:bg-surface-100"
+                    className="p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer"
+                    title="Delete category"
                   >
                     <Trash2 className="w-4 h-4" />
                   </button>

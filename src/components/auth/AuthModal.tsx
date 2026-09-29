@@ -127,15 +127,15 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                             <Sparkles className="w-4 h-4 text-gold-400" />
                         </div>
                     </div>
-                    <span className="text-xl font-bold tracking-wider text-white uppercase font-display">
-                        LUXE<span className="text-gold-400 font-light ml-1">ATELIER</span>
+                    <span className="text-xl font-bold tracking-wider text-slate-900 uppercase font-display">
+                        LUXE<span className="text-amber-600 font-light ml-1">ATELIER</span>
                     </span>
                 </div>
             }
             description={mode === 'login' ? 'Sign in to your collector account' : 'Create your collector account'}
         >
             {/* Mode Tabs */}
-            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-surface-100 border border-border-light mb-6">
+            <div className="grid grid-cols-2 gap-1 p-1 rounded-xl bg-slate-100 border border-slate-200 mb-6">
                 {(['login', 'register'] as const).map((m) => (
                     <button
                         key={m}
@@ -143,8 +143,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                         className={cn(
                             'py-2 rounded-lg text-xs font-bold uppercase tracking-wider transition-all',
                             mode === m
-                                ? 'bg-gold-500 text-black shadow-md shadow-gold-500/25'
-                                : 'text-gray-400 hover:text-white'
+                                ? 'bg-slate-900 text-white shadow-sm'
+                                : 'text-slate-500 hover:text-slate-900'
                         )}
                         disabled={registrationSuccess}
                     >
@@ -256,27 +256,27 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                     )}
 
                     {formError && (
-                        <div className="px-4 py-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-medium">
+                        <div className="px-4 py-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
                             {formError}
                         </div>
                     )}
 
                     <Button
                         type="submit"
-                        variant="gold"
+                        variant="primary"
                         size="lg"
-                        className="w-full"
+                        className="w-full shadow-md"
                         isLoading={isSubmitting}
                     >
                         {mode === 'login' ? 'Sign In' : 'Create Account'}
                     </Button>
 
-                    <p className="text-center text-xs text-gray-400">
+                    <p className="text-center text-xs text-slate-500">
                         {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
                         <button
                             type="button"
                             onClick={switchMode}
-                            className="text-gold-400 font-semibold hover:text-gold-300 transition-colors"
+                            className="text-amber-700 font-semibold hover:text-amber-800 transition-colors"
                         >
                             {mode === 'login' ? 'Register now' : 'Sign in'}
                         </button>

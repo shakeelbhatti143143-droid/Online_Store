@@ -1,32 +1,45 @@
 import { storeDb } from '@/lib/data/store-db';
 import { HeroSection } from '@/components/storefront/HeroSection';
+import { TrustStrip } from '@/components/storefront/TrustStrip';
 import { CategoryShowcase } from '@/components/storefront/CategoryShowcase';
 import { FeaturedProducts } from '@/components/storefront/FeaturedProducts';
 import { DealsBanner } from '@/components/storefront/DealsBanner';
-import PublicChatbot from '@/app/components/chatbot/PublicChatbot';
+import { TrendingProducts } from '@/components/storefront/TrendingProducts';
+import { AtelierStory } from '@/components/storefront/AtelierStory';
 
-// The catalog is fetched from MongoDB and must be rendered at request time.
+// The catalog is fetched dynamically from MongoDB at request time.
 export const dynamic = 'force-dynamic';
 
 export default async function HomePage() {
-  const products = await storeDb.getProducts();
+  const [products, categories] = await Promise.all([
+    storeDb.getProducts().catch(() => []),
+    storeDb.getCategories().catch(() => []),
+  ]);
+
+  const featuredProduct = products.find((p) => p.isFeatured) || products[0];
 
   return (
-    <div className="flex flex-col min-h-screen">
-      {/* 1. Hero Showcase */}
-      <HeroSection />
+    <div className="flex flex-col min-h-screen bg-white">
+      {/* 1. Large Hero Banner */}
+      <HeroSection product={featuredProduct} />
 
-      {/* 2. Department / Category Grid */}
-      <CategoryShowcase />
+      {/* 2. Trust / Service Features */}
+      <TrustStrip />
 
-      {/* 3. Curated Featured Highlights & Tab Filter */}
+      {/* 3. Shop by Categories (Dynamic from Admin/DB) */}
+      <CategoryShowcase categories={categories} />
+
+      {/* 4. Featured / Best Selling Products (Compact 4-5 Column Grid) */}
       <FeaturedProducts products={products} />
 
-      {/* 4. Limited-Time Vault Deals Banner */}
+      {/* 5. Promotional Banner */}
       <DealsBanner />
 
-      {/* 5. Public AI Chatbot */}
-      <PublicChatbot />
+      {/* 6. Popular / Trending Products */}
+      <TrendingProducts products={products} />
+
+      {/* 7. Craftsmanship & Brand Heritage */}
+      <AtelierStory />
     </div>
   );
 }

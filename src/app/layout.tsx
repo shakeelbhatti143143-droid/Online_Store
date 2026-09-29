@@ -43,8 +43,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${inter.variable} ${outfit.variable} dark`}>
-      <body className="bg-background text-gray-100 min-h-screen flex flex-col antialiased selection:bg-gold-500 selection:text-black">
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
+      <body className="bg-white text-slate-900 min-h-screen flex flex-col antialiased selection:bg-amber-500 selection:text-white">
         <AppProviders>
           <Navbar />
 

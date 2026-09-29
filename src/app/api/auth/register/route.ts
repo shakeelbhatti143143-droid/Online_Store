@@ -1,9 +1,11 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import AdminLog from '@/lib/models/AdminLog';
 import { hashPassword } from '@/lib/auth';
-import { normalizeEmail, isAdminEmail } from '@/lib/config';
+import { normalizeEmail, isAdminEmail, getAppBaseUrl } from '@/lib/config';
 import {
   generateVerificationToken,
   hashVerificationToken,
@@ -121,7 +123,8 @@ export async function POST(request: NextRequest) {
     // Send verification email (do not block registration on email failure,
     // but log the error for investigation)
     try {
-      await sendVerificationEmail(normalizedEmail, rawToken, expiresAt);
+      const baseUrl = getAppBaseUrl(request);
+      await sendVerificationEmail(normalizedEmail, rawToken, expiresAt, baseUrl);
     } catch (emailErr) {
       console.error('[register] Failed to send verification email:', emailErr);
       // The account is still created; the user can use the resend endpoint.

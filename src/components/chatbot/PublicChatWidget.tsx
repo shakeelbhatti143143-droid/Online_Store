@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
+import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Send,
@@ -95,6 +96,7 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10 MB
 // ---------------------------------------------------------------------------
 
 export default function PublicChatWidget() {
+    const pathname = usePathname();
     const [chatbot, setChatbot] = useState<ChatbotConfig | null>(null);
     const [isOpen, setIsOpen] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -517,6 +519,10 @@ export default function PublicChatWidget() {
     // ---------------------------------------------------------------------------
     // Loading state (no chatbot configured)
     // ---------------------------------------------------------------------------
+
+    if (pathname?.startsWith('/admin')) {
+        return null;
+    }
 
     if (isLoadingConfig) {
         return (

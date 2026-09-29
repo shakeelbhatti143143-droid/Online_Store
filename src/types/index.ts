@@ -9,6 +9,9 @@ export interface UserProfile {
   role: UserRole;
   createdAt: string;
   emailVerified: boolean;
+  isActive?: boolean;
+  ordersCount?: number;
+  totalSpend?: number;
 }
 
 export interface Category {
@@ -202,6 +205,10 @@ export interface AnalyticsSummary {
   revenueChangePct: number;
   ordersChangePct: number;
   customersChangePct: number;
+  totalUsers?: number;
+  verifiedUsers?: number;
+  unverifiedUsers?: number;
+  adminCount?: number;
   salesData: {
     date: string;
     revenue: number;

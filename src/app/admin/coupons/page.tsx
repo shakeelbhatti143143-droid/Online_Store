@@ -75,11 +75,11 @@ export default function AdminCouponsPage() {
         {coupons.map((coupon) => (
           <div
             key={coupon.id}
-            className="p-6 rounded-3xl glass-card border border-border-light bg-surface-200/90 flex flex-col justify-between space-y-4"
+            className="p-6 rounded-3xl admin-card flex flex-col justify-between space-y-4"
           >
             <div className="flex items-start justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gold-500/10 border border-gold-500/30 flex items-center justify-center text-gold-400">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-sm">
                   <Tag className="w-4 h-4" />
                 </div>
                 <span className="font-mono text-base font-extrabold text-white tracking-wider">
@@ -89,29 +89,29 @@ export default function AdminCouponsPage() {
 
               <button
                 onClick={() => handleDeleteCoupon(coupon.id, coupon.code)}
-                className="p-1.5 rounded-lg text-gray-500 hover:text-rose-400 transition-colors"
+                className="p-2 rounded-xl bg-white/5 border border-white/10 text-slate-400 hover:text-rose-400 hover:bg-white/10 transition-colors cursor-pointer"
                 aria-label="Delete coupon"
               >
                 <Trash2 className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-gray-300 leading-relaxed">{coupon.description}</p>
+            <p className="text-xs text-slate-300 leading-relaxed font-medium">{coupon.description}</p>
 
-            <div className="pt-3 border-t border-border-subtle space-y-1 text-xs text-gray-400">
-              <div className="flex justify-between">
+            <div className="pt-3 border-t border-white/10 space-y-2 text-xs text-slate-400">
+              <div className="flex justify-between items-center">
                 <span>Discount Value:</span>
-                <strong className="text-gold-400">
+                <strong className="text-amber-400 font-extrabold font-mono text-sm">
                   {coupon.discountType === 'percentage' ? `${coupon.discountValue}% OFF` : `${formatPrice(coupon.discountValue)} OFF`}
                 </strong>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span>Min Order Spend:</span>
-                <span className="text-white">{coupon.minOrderAmount ? formatPrice(coupon.minOrderAmount) : 'None'}</span>
+                <span className="text-white font-bold font-mono">{coupon.minOrderAmount ? formatPrice(coupon.minOrderAmount) : 'None'}</span>
               </div>
-              <div className="flex justify-between">
+              <div className="flex justify-between items-center">
                 <span>Total Redemptions:</span>
-                <span className="text-white font-mono">{coupon.usedCount} used</span>
+                <span className="text-white font-mono font-bold">{coupon.usedCount} used</span>
               </div>
             </div>
           </div>

@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
 import { Heart, Eye, ShoppingBag, Check } from 'lucide-react';
 import { Product } from '@/types';
 import { formatPrice, cn } from '@/lib/utils';
@@ -64,82 +63,128 @@ export const ProductCard: React.FC<ProductCardProps> = ({
   const secondaryImage = product.images[1] || primaryImage;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 15 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.4 }}
-      className="group relative flex flex-col rounded-2xl glass-card overflow-hidden bg-surface-200/50 border border-border-light hover:border-gold-500/30 transition-all duration-300"
+    <div
+      className="group relative flex flex-col rounded-2xl bg-white border border-slate-200/80 hover:border-slate-300 hover:shadow-[0_8px_24px_rgba(0,0,0,0.06)] transition-all duration-300 overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Image Container */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden bg-surface-100/60">
+      {/* Product Image Container */}
+      <div className="relative aspect-[4/5] w-full overflow-hidden bg-slate-50">
         <Link href={`/products/${product.slug}`} className="block w-full h-full">
           <Image
             src={isHovered && product.images.length > 1 ? secondaryImage : primaryImage}
             alt={product.title}
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
+            sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
             priority={priority}
-            className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-105"
+            className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-105"
           />
         </Link>
 
-        {/* Badges */}
-        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 pointer-events-none">
+        {/* Badges in Top Left */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10 pointer-events-none">
           {product.badge === 'NEW' && <Badge variant="cyan" size="sm">NEW</Badge>}
           {product.badge === 'BEST SELLER' && <Badge variant="gold" size="sm">BEST SELLER</Badge>}
           {product.badge === 'SALE' && <Badge variant="rose" size="sm">SALE</Badge>}
           {product.badge === 'LIMITED' && <Badge variant="emerald" size="sm">LIMITED</Badge>}
-          {isOutOfStock && <Badge variant="default" size="sm">OUT OF STOCK</Badge>}
+          {isOutOfStock && <Badge variant="default" size="sm">SOLD OUT</Badge>}
           {product.discountPercentage && product.discountPercentage > 0 && !isOutOfStock && (
-            <Badge variant="rose" size="sm">-{product.discountPercentage}%</Badge>
+            <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-600 text-white shadow-sm">
+              -{product.discountPercentage}%
+            </span>
           )}
         </div>
 
-        {/* Wishlist Button */}
+        {/* Wishlist Button in Top Right */}
         <button
           onClick={handleWishlist}
           aria-label={isFavorited ? 'Remove from wishlist' : 'Add to wishlist'}
           className={cn(
-            'absolute top-3 right-3 z-10 w-9 h-9 rounded-full flex items-center justify-center transition-all duration-200 backdrop-blur-md',
+            'absolute top-2.5 right-2.5 z-10 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm',
             isFavorited
-              ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40 shadow-lg'
-              : 'bg-black/40 text-gray-300 hover:text-white hover:bg-black/60 border border-white/10'
+              ? 'bg-rose-50 text-rose-500 border border-rose-200 shadow-rose-100'
+              : 'bg-white/90 hover:bg-white text-slate-400 hover:text-rose-500 border border-slate-200/60'
           )}
         >
-          <Heart className={cn('w-4 h-4 transition-transform active:scale-125', isFavorited && 'fill-rose-400')} />
+          <Heart className={cn('w-4 h-4 transition-transform active:scale-125', isFavorited && 'fill-rose-500 text-rose-500')} />
         </button>
 
-        {/* Quick Actions Hover Overlay */}
-        <div className="absolute inset-x-3 bottom-3 z-10 flex gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-2 group-hover:translate-y-0">
-          {onQuickView && (
-            <button
-              onClick={handleQuickViewClick}
-              className="flex-1 h-10 rounded-xl bg-surface-50/90 hover:bg-surface-50 text-white text-xs font-semibold flex items-center justify-center gap-1.5 border border-white/10 backdrop-blur-md shadow-lg transition-all active:scale-95"
-            >
-              <Eye className="w-3.5 h-3.5 text-cyan-400" />
-              <span>Quick View</span>
-            </button>
-          )}
+        {/* Quick View Button on Hover */}
+        {onQuickView && (
+          <button
+            onClick={handleQuickViewClick}
+            className="absolute bottom-2.5 left-2.5 right-2.5 z-10 h-8 rounded-xl bg-white/95 hover:bg-white text-slate-800 text-xs font-semibold flex items-center justify-center gap-1.5 border border-slate-200/80 shadow-md opacity-0 group-hover:opacity-100 transition-all duration-200 translate-y-1 group-hover:translate-y-0"
+            aria-label="Quick View product"
+          >
+            <Eye className="w-3.5 h-3.5 text-slate-500" />
+            <span>Quick View</span>
+          </button>
+        )}
+      </div>
 
+      {/* Product Information Container */}
+      <div className="flex flex-col flex-1 p-3 sm:p-3.5 justify-between">
+        <div>
+          {/* Brand / Category Metadata */}
+          <div className="flex items-center justify-between gap-1 text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
+            <span className="truncate">{product.brandName || product.categoryName || 'Luxe Atelier'}</span>
+            {isLowStock && (
+              <span className="text-amber-700 font-bold shrink-0 text-[10px]">
+                {product.stockQuantity} left
+              </span>
+            )}
+          </div>
+
+          {/* Product Title */}
+          <Link href={`/products/${product.slug}`} className="block group-hover:text-amber-700 transition-colors">
+            <h3 className="text-xs sm:text-[13px] font-semibold text-slate-900 line-clamp-1 leading-snug" title={product.title}>
+              {product.title}
+            </h3>
+          </Link>
+
+          {/* Rating */}
+          <div className="mt-1.5 flex items-center">
+            <RatingStars rating={product.rating} size="sm" showCount reviewsCount={product.reviewsCount} />
+          </div>
+        </div>
+
+        {/* Price & Action Row */}
+        <div className="mt-3 pt-2.5 border-t border-slate-100 flex flex-col gap-2">
+          <div className="flex items-baseline justify-between gap-1">
+            <div className="flex items-baseline gap-1.5">
+              <span className="text-sm sm:text-base font-bold text-slate-900 tracking-tight">
+                {formatPrice(product.price)}
+              </span>
+              {product.originalPrice && product.originalPrice > product.price && (
+                <span className="text-[11px] text-slate-400 line-through">
+                  {formatPrice(product.originalPrice)}
+                </span>
+              )}
+            </div>
+            {product.discountPercentage && product.discountPercentage > 0 && (
+              <span className="text-[10px] font-bold text-rose-600 bg-rose-50 px-1.5 py-0.5 rounded">
+                Save {product.discountPercentage}%
+              </span>
+            )}
+          </div>
+
+          {/* Compact Add to Bag Button */}
           <button
             onClick={handleAddToCart}
             disabled={isOutOfStock || isAdding}
             className={cn(
-              'flex-1 h-10 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 shadow-lg transition-all active:scale-95 backdrop-blur-md',
+              'w-full h-8 sm:h-8.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 active:scale-[0.98]',
               isOutOfStock
-                ? 'bg-gray-800 text-gray-400 border border-gray-700 cursor-not-allowed'
+                ? 'bg-slate-100 text-slate-400 border border-slate-200 cursor-not-allowed'
                 : justAdded
-                ? 'bg-emerald-600 text-white border border-emerald-400'
-                : 'bg-white hover:bg-gray-100 text-black font-bold'
+                ? 'bg-emerald-600 text-white font-bold shadow-sm'
+                : 'bg-slate-900 hover:bg-slate-800 text-white font-medium shadow-sm hover:shadow'
             )}
           >
             {justAdded ? (
               <>
                 <Check className="w-3.5 h-3.5 text-white" />
-                <span>Added!</span>
+                <span>Added to Bag</span>
               </>
             ) : (
               <>
@@ -150,47 +195,6 @@ export const ProductCard: React.FC<ProductCardProps> = ({
           </button>
         </div>
       </div>
-
-      {/* Info Container */}
-      <div className="flex flex-col flex-1 p-4">
-        {/* Brand & Category */}
-        <div className="flex items-center justify-between gap-2 text-xs text-gray-400 mb-1 font-medium tracking-wide">
-          <span>{product.brandName || 'Luxe Atelier'}</span>
-          {isLowStock && <span className="text-gold-400 text-[11px]">Only {product.stockQuantity} left!</span>}
-        </div>
-
-        {/* Title */}
-        <Link href={`/products/${product.slug}`} className="group-hover:text-gold-400 transition-colors">
-          <h3 className="text-sm font-semibold text-white line-clamp-1 leading-snug">
-            {product.title}
-          </h3>
-        </Link>
-
-        {/* Short Description */}
-        <p className="text-xs text-gray-400 line-clamp-1 mt-1 leading-relaxed">
-          {product.shortDescription}
-        </p>
-
-        {/* Rating */}
-        <div className="mt-2 flex items-center gap-1.5">
-          <RatingStars rating={product.rating} size="sm" showCount reviewsCount={product.reviewsCount} />
-        </div>
-
-        {/* Price Row */}
-        <div className="mt-3 pt-3 border-t border-border-subtle flex items-baseline justify-between">
-          <div className="flex items-baseline gap-2">
-            <span className="text-base font-bold text-white tracking-tight">
-              {formatPrice(product.price)}
-            </span>
-            {product.originalPrice && product.originalPrice > product.price && (
-              <span className="text-xs text-gray-500 line-through">
-                {formatPrice(product.originalPrice)}
-              </span>
-            )}
-          </div>
-          <span className="text-[11px] text-gray-400 font-medium">Free Express Ship</span>
-        </div>
-      </div>
-    </motion.div>
+    </div>
   );
 };

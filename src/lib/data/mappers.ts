@@ -89,6 +89,7 @@ export function mapUser(doc: any): UserProfile {
     role: doc.role,
     createdAt: toIso(doc.createdAt),
     emailVerified: Boolean(doc.emailVerified),
+    isActive: doc.isActive !== false,
   };
 }
 

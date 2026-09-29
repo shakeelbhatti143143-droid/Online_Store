@@ -6,6 +6,7 @@ import User from '@/lib/models/User';
 import AdminLog from '@/lib/models/AdminLog';
 import { verifyToken, toUserProfile } from '@/lib/auth';
 import { isAuthUser, requireAuth } from '@/lib/auth-server';
+import { isAdminEmail } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
   try {
@@ -24,6 +25,12 @@ export async function GET(request: NextRequest) {
     const user = await User.findById(payload.userId);
     if (!user || user.isActive === false) {
       return NextResponse.json({ error: 'User no longer exists.' }, { status: 401 });
+    }
+
+    // Auto-align role for authorized admin email
+    if (isAdminEmail(user.email) && user.role !== 'admin') {
+      user.role = 'admin';
+      await User.updateOne({ _id: user._id }, { role: 'admin' });
     }
 
     return NextResponse.json({ user: toUserProfile(user) });

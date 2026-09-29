@@ -20,12 +20,10 @@ const ADMIN_PATHS = [
 const PROTECTED_USER_PATHS = [
     '/account',
     '/account/orders',
-    '/wishlist',
-    '/checkout',
 ];
 
 export function middleware(request: NextRequest) {
-    const { pathname } = request.nextUrl;
+    const { pathname, search } = request.nextUrl;
 
     // Check if this is an admin route
     const isAdminRoute = ADMIN_PATHS.some(
@@ -41,14 +39,15 @@ export function middleware(request: NextRequest) {
     const adminToken = request.cookies.get('admin_session')?.value;
 
     // Get user auth token from cookie
-    const userToken = request.cookies.get('luxe_auth_token')?.value;
+    const userToken = request.cookies.get('luxe_auth_token')?.value || request.cookies.get('auth_token')?.value;
 
     // Admin route protection
     if (isAdminRoute) {
-        // If no admin session cookie, redirect to home (login flow)
+        // If no admin session cookie, redirect to login page with return url
         if (!adminToken) {
-            const url = new URL('/', request.url);
-            return NextResponse.redirect(url);
+            const redirectUrl = new URL('/login', request.url);
+            redirectUrl.searchParams.set('redirect', `${pathname}${search}`);
+            return NextResponse.redirect(redirectUrl);
         }
         // Admin session cookie exists - allow access (verified server-side by /api/admin/me)
         return NextResponse.next();
@@ -56,10 +55,11 @@ export function middleware(request: NextRequest) {
 
     // Protected user route protection
     if (isProtectedUserRoute) {
-        // If no user token and no admin session, redirect to home
+        // If no user token and no admin session, redirect to login page with return url
         if (!userToken && !adminToken) {
-            const url = new URL('/', request.url);
-            return NextResponse.redirect(url);
+            const redirectUrl = new URL('/login', request.url);
+            redirectUrl.searchParams.set('redirect', `${pathname}${search}`);
+            return NextResponse.redirect(redirectUrl);
         }
     }
 
@@ -70,7 +70,5 @@ export const config = {
     matcher: [
         '/admin/:path*',
         '/account/:path*',
-        '/wishlist/:path*',
-        '/checkout/:path*',
     ],
 };

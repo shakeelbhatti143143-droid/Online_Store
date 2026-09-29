@@ -10,18 +10,18 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        background: "#080B11",
+        background: "#FFFFFF",
         surface: {
-          50: "#1A2234",
-          100: "#141A28",
-          200: "#0F1420",
-          300: "#0B0F19",
-          DEFAULT: "#0D121D",
+          50: "#F8FAFC",
+          100: "#F1F5F9",
+          200: "#E2E8F0",
+          300: "#CBD5E1",
+          DEFAULT: "#FFFFFF",
         },
         border: {
-          subtle: "rgba(255, 255, 255, 0.07)",
-          light: "rgba(255, 255, 255, 0.12)",
-          highlight: "rgba(255, 255, 255, 0.2)",
+          subtle: "rgba(15, 23, 42, 0.06)",
+          light: "rgba(15, 23, 42, 0.1)",
+          highlight: "rgba(15, 23, 42, 0.18)",
         },
         gold: {
           50: "#FFFBEB",

@@ -1,3 +1,5 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import AdminLog from '@/lib/models/AdminLog';
 import { getAdminSession, clearAdminSessionCookie } from '@/lib/admin-session';
@@ -23,17 +25,21 @@ export async function POST(request: NextRequest) {
 
         const response = NextResponse.json({
             success: true,
-            redirectTo: '/admin/login',
+            redirectTo: '/login',
         });
 
-        // Clear the admin session cookie
+        // Clear the admin session cookie and regular auth cookie
         clearAdminSessionCookie(response);
+        response.cookies.set('luxe_auth_token', '', { path: '/', maxAge: 0 });
+        response.cookies.set('auth_token', '', { path: '/', maxAge: 0 });
 
         return response;
     } catch (error) {
         console.error('[admin/logout] error:', error);
         const response = NextResponse.json({ error: 'Something went wrong during logout.' }, { status: 500 });
         clearAdminSessionCookie(response);
+        response.cookies.set('luxe_auth_token', '', { path: '/', maxAge: 0 });
+        response.cookies.set('auth_token', '', { path: '/', maxAge: 0 });
         return response;
     }
 }

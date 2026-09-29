@@ -58,10 +58,10 @@ export const RatingStars: React.FC<RatingStarsProps> = ({
                 className={cn(
                   starSizes[size],
                   isFilled
-                    ? 'text-gold-400 fill-gold-400'
+                    ? 'text-amber-500 fill-amber-400'
                     : isHalf
-                    ? 'text-gold-400 fill-gold-400/50'
-                    : 'text-gray-600'
+                    ? 'text-amber-500 fill-amber-400/50'
+                    : 'text-slate-200 fill-slate-100'
                 )}
               />
             </button>
@@ -69,7 +69,7 @@ export const RatingStars: React.FC<RatingStarsProps> = ({
         })}
       </div>
       {showCount && (
-        <span className="text-xs text-gray-400 font-medium ml-1">
+        <span className="text-xs text-slate-500 font-medium ml-1">
           {rating.toFixed(1)} {reviewsCount !== undefined && `(${reviewsCount})`}
         </span>
       )}

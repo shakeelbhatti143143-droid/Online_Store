@@ -5,21 +5,28 @@ import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import AdminLog from '@/lib/models/AdminLog';
 import { getAdminSession } from '@/lib/admin-session';
+import { isAdminEmail } from '@/lib/config';
 
 export async function GET(request: NextRequest) {
     try {
         const session = await getAdminSession(request);
 
         if (!session) {
-            return NextResponse.json({ authenticated: false });
+            return NextResponse.json({ authenticated: false }, { status: 401 });
         }
 
-        // Verify the admin still exists and is active in the database
+        // Verify the admin still exists, has role admin, is active, is verified, and matches the dedicated admin email
         await connectDB();
         const admin = await User.findById(session.adminId).select('-password');
 
-        if (!admin || admin.role !== 'admin' || admin.isActive === false) {
-            return NextResponse.json({ authenticated: false });
+        if (
+            !admin ||
+            admin.role !== 'admin' ||
+            admin.isActive === false ||
+            admin.emailVerified !== true ||
+            !isAdminEmail(admin.email)
+        ) {
+            return NextResponse.json({ authenticated: false, error: 'Unauthorized admin access.' }, { status: 403 });
         }
 
         // Log admin access

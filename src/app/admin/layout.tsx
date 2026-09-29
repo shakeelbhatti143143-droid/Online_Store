@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Menu } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 import { AdminSidebar } from '@/components/admin/AdminSidebar';
 import { AdminHeader } from '@/components/admin/AdminHeader';
@@ -31,10 +32,10 @@ export default function AdminLayout({
         if (data.authenticated) {
           setIsAuthorized(true);
         } else {
-          router.replace('/');
+          router.replace('/login?redirect=/admin');
         }
       } catch {
-        router.replace('/');
+        router.replace('/login?redirect=/admin');
       } finally {
         setIsChecking(false);
       }
@@ -58,9 +59,17 @@ export default function AdminLayout({
 
   if (isChecking) {
     return (
-      <div className="min-h-screen bg-background text-gray-100 flex items-center justify-center">
-        <div className="text-xs text-gray-400">
-          Verifying admin session...
+      <div className="min-h-screen bg-[#070B12] text-gray-100 flex flex-col items-center justify-center space-y-4">
+        <div className="relative">
+          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-amber-700 p-0.5 animate-pulse shadow-xl shadow-amber-500/20">
+            <div className="w-full h-full bg-[#0D1322] rounded-[14px] flex items-center justify-center">
+              <div className="w-6 h-6 rounded-full border-2 border-amber-400 border-t-transparent animate-spin" />
+            </div>
+          </div>
+        </div>
+        <div className="text-center space-y-1">
+          <p className="text-sm font-bold tracking-wider text-white uppercase font-display">Luxe Atelier</p>
+          <p className="text-xs text-amber-400/80 font-mono">Verifying Server Authority...</p>
         </div>
       </div>
     );
@@ -71,17 +80,7 @@ export default function AdminLayout({
   }
 
   return (
-    <div
-      className="
-        min-h-screen
-        bg-background
-        text-gray-100
-        flex
-        flex-col
-        antialiased
-        overflow-x-hidden
-      "
-    >
+    <div className="admin-shell min-h-screen flex flex-col antialiased overflow-x-hidden">
       {/* =========================================
           ADMIN SIDEBAR
           ========================================= */}
@@ -123,7 +122,7 @@ export default function AdminLayout({
 
           rounded-xl
 
-          bg-surface-300/95
+          bg-[#0D1322]/95
           backdrop-blur-xl
 
           border
@@ -132,9 +131,9 @@ export default function AdminLayout({
           text-gray-200
 
           shadow-xl
-          shadow-black/30
+          shadow-black/50
 
-          hover:bg-surface-100
+          hover:bg-[#131B30]
           hover:text-white
 
           active:scale-95
@@ -151,28 +150,10 @@ export default function AdminLayout({
           MAIN CONTENT
           ========================================= */}
       <main
-        className="
-          flex-1
-          min-w-0
-
-          pt-20
-
-          px-4
-          sm:px-6
-          lg:px-8
-          xl:px-10
-
-          pb-8
-
-          transition-all
-          duration-300
-
-          ml-0
-          lg:ml-64
-        "
-        style={{
-          marginLeft: undefined,
-        }}
+        className={cn(
+          'flex-1 min-w-0 pt-20 px-4 sm:px-6 lg:px-8 xl:px-10 pb-8 transition-all duration-300 ml-0',
+          isCollapsed ? 'lg:ml-20' : 'lg:ml-64'
+        )}
       >
         <div
           className="

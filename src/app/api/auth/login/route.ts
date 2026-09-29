@@ -1,10 +1,12 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
 import AdminLog from '@/lib/models/AdminLog';
 import { verifyPassword, signToken, toUserProfile } from '@/lib/auth';
 import { setAdminSessionCookie, signAdminSession } from '@/lib/admin-session';
-import { normalizeEmail } from '@/lib/config';
+import { normalizeEmail, isAdminEmail } from '@/lib/config';
 import { rateLimit, getClientIp } from '@/lib/rate-limit';
 
 // Rate limit: 10 login attempts per IP per 15 minutes
@@ -76,6 +78,12 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Incorrect password. Please try again.' }, { status: 401 });
     }
 
+    // Auto-align role for authorized admin email
+    if (isAdminEmail(normalizedEmail) && user.role !== 'admin') {
+      user.role = 'admin';
+      await User.updateOne({ _id: user._id }, { role: 'admin' });
+    }
+
     const token = signToken({
       userId: String(user._id),
       email: user.email,
@@ -113,6 +121,13 @@ export async function POST(request: NextRequest) {
         redirectTo: '/admin',
       });
       setAdminSessionCookie(response, adminToken);
+      response.cookies.set('luxe_auth_token', token, {
+        httpOnly: false,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 60 * 60 * 24 * 7,
+        path: '/',
+      });
     } else {
       response = NextResponse.json({
         message: 'Signed in successfully.',

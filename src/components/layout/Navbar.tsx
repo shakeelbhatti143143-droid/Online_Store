@@ -16,7 +16,8 @@ import {
   LogOut,
   ChevronDown,
   ArrowRight,
-  ShieldAlert,
+  ShieldCheck,
+  Package,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useWishlist } from '@/context/WishlistContext';
@@ -32,6 +33,11 @@ export const Navbar: React.FC = () => {
   const { itemCount, setIsCartOpen } = useCart();
   const { wishlistCount } = useWishlist();
   const { user, isAuthenticated, isAdmin, logout } = useAuth();
+  const isEffectiveAdmin = isAdmin || user?.role === 'admin' || user?.email?.toLowerCase() === 'gb8585438@gmail.com';
+
+  if (pathname?.startsWith('/admin')) {
+    return null;
+  }
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -44,7 +50,7 @@ export const Navbar: React.FC = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 20);
+      setIsScrolled(window.scrollY > 15);
     };
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
@@ -85,12 +91,12 @@ export const Navbar: React.FC = () => {
   // Filtered search results
   const searchResults = searchQuery.trim()
     ? INITIAL_PRODUCTS.filter(
-      (p) =>
-        p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.categoryName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        p.sku.toLowerCase().includes(searchQuery.toLowerCase())
-    ).slice(0, 4)
+        (p) =>
+          p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.categoryName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.brandName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          p.sku.toLowerCase().includes(searchQuery.toLowerCase())
+      ).slice(0, 5)
     : [];
 
   const handleSearchSubmit = (e: React.FormEvent) => {
@@ -103,86 +109,100 @@ export const Navbar: React.FC = () => {
 
   return (
     <>
+      {/* Top Announcement Bar */}
+      <div className="bg-slate-900 text-white text-[11px] font-medium tracking-wider uppercase py-2 px-4 text-center border-b border-slate-800">
+        <span className="opacity-90">
+          Complimentary Global Express Delivery on orders over $500 • 100% Certified Authentic
+        </span>
+      </div>
+
+      {/* Main Sticky Header */}
       <header
         className={cn(
-          'fixed top-0 inset-x-0 z-40 border-b transition-all duration-300 ease-out',
-          isScrolled
-            ? 'glass-navbar py-2.5 shadow-[0_12px_30px_rgba(0,0,0,0.24)] backdrop-blur-xl border-white/10'
-            : 'bg-[#080b12]/86 py-3.5 backdrop-blur-md border-white/[0.07]'
+          'sticky top-0 inset-x-0 z-40 transition-all duration-300 ease-out bg-white/95 backdrop-blur-md border-b border-slate-200/80',
+          isScrolled ? 'py-2.5 shadow-[0_4px_20px_rgba(0,0,0,0.04)]' : 'py-3.5'
         )}
       >
-        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-3">
+        <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           {/* Left: Mobile Menu & Brand Logo */}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <button
               onClick={() => setIsMobileMenuOpen(true)}
-              className="xl:hidden p-2.5 text-gray-300 hover:text-gold-400 rounded-xl hover:bg-white/5 transition-all duration-200"
+              className="xl:hidden p-2 text-slate-700 hover:text-slate-900 rounded-xl hover:bg-slate-100 transition-colors"
               aria-label="Open navigation menu"
             >
-              <Menu className="w-6 h-6" />
+              <Menu className="w-5 h-5" />
             </button>
 
-            <Link href="/" className="relative flex items-center gap-2.5 group py-1" aria-label="Luxe Atelier Home">
-              <div className="w-9 h-9 rounded-[10px] border border-gold-400/60 bg-gradient-to-br from-gold-400/20 via-[#161719] to-black p-0.5 shadow-[0_0_0_1px_rgba(245,184,0,0.08)] transition-all duration-300 group-hover:border-gold-300 group-hover:shadow-[0_0_18px_rgba(245,184,0,0.2)]">
-                <div className="w-full h-full bg-[#0b0e15] rounded-[8px] flex items-center justify-center">
-                  <Crown className="w-4 h-4 text-gold-400 transition-transform duration-300 group-hover:-translate-y-0.5" strokeWidth={1.6} />
+            <Link href="/" className="flex items-center gap-2.5 group py-1" aria-label="Luxe Atelier Home">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl border border-amber-500/40 bg-gradient-to-br from-amber-50 to-amber-100 p-0.5 shadow-sm transition-all duration-300 group-hover:border-amber-500 group-hover:shadow-md">
+                <div className="w-full h-full bg-white rounded-[9px] flex items-center justify-center">
+                  <Crown className="w-4 h-4 text-amber-600 transition-transform duration-300 group-hover:-translate-y-0.5" strokeWidth={1.8} />
                 </div>
               </div>
               <span className="leading-none uppercase font-display whitespace-nowrap">
-                <span className="block text-[17px] font-extrabold tracking-[0.13em] text-white">LUXE <span className="font-medium text-gold-400">ATELIER</span></span>
-                <span className="block mt-1 text-[8px] font-bold tracking-[0.33em] text-gold-400/90">HOME</span>
+                <span className="block text-base sm:text-[17px] font-extrabold tracking-[0.14em] text-slate-900">
+                  LUXE <span className="font-semibold text-amber-600">ATELIER</span>
+                </span>
+                <span className="block mt-0.5 text-[8px] font-bold tracking-[0.32em] text-slate-400">
+                  CURATED STORE
+                </span>
               </span>
-              <span className="absolute bottom-0 left-0 h-px w-[43px] origin-left bg-gradient-to-r from-gold-400 to-transparent transition-transform duration-300 group-hover:scale-x-125" />
             </Link>
           </div>
 
           {/* Center: Desktop Navigation Links */}
-          <nav className="hidden xl:flex flex-1 items-center justify-center gap-4 2xl:gap-7" aria-label="Primary navigation">
+          <nav className="hidden xl:flex flex-1 items-center justify-center gap-6 2xl:gap-8" aria-label="Primary navigation">
             {navLinks.map((link) => {
-              const isActive = pathname === '/shop' && link.href === '/shop';
+              const isActive =
+                (pathname === '/shop' && link.href === '/shop') ||
+                (link.href.includes('?') && pathname === '/shop' && typeof window !== 'undefined' && window.location.search.includes(link.href.split('?')[1]));
+
               return (
                 <Link
                   key={link.label}
                   href={link.href}
                   className={cn(
-                    'group relative py-2 text-[10px] 2xl:text-[11px] font-bold uppercase tracking-[0.12em] text-center leading-tight transition-colors duration-200 hover:text-gold-400',
-                    isActive ? 'text-gold-400' : 'text-gray-300'
+                    'group relative py-2 text-[12px] font-bold uppercase tracking-[0.12em] transition-colors duration-200',
+                    isActive ? 'text-amber-700' : 'text-slate-600 hover:text-slate-900'
                   )}
                 >
                   {link.label}
                   {isActive && (
                     <motion.div
                       layoutId="activeNav"
-                      className="absolute bottom-0 inset-x-1 h-px bg-gradient-to-r from-gold-500 to-amber-300 rounded-full"
+                      className="absolute bottom-0 inset-x-0 h-0.5 bg-amber-600 rounded-full"
                     />
                   )}
-                  {!isActive && <span className="absolute bottom-0 inset-x-1 h-px origin-left scale-x-0 bg-gold-400 transition-transform duration-300 group-hover:scale-x-100" />}
+                  {!isActive && (
+                    <span className="absolute bottom-0 inset-x-0 h-0.5 origin-left scale-x-0 bg-amber-600 transition-transform duration-300 group-hover:scale-x-100" />
+                  )}
                 </Link>
               );
             })}
           </nav>
 
-          {/* Right: Actions (Search, Wishlist, Cart, Account, Admin Pill) */}
-          <div className="flex items-center gap-2 sm:gap-3">
+          {/* Right: Actions (Search, Wishlist, Cart, Account, Admin Link) */}
+          <div className="flex items-center gap-1.5 sm:gap-2.5">
             {/* Search Trigger */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2.5 text-gray-300 hover:text-gold-400 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center gap-2 group"
+              className="p-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200 flex items-center gap-2 group"
               aria-label="Search catalog"
             >
               <Search className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
-              <span className="hidden 2xl:inline text-xs text-gray-400 group-hover:text-gray-200">Search catalog...</span>
+              <span className="hidden 2xl:inline text-xs text-slate-400 group-hover:text-slate-600">Search pieces...</span>
             </button>
 
             {/* Wishlist Link */}
             <Link
               href="/wishlist"
-              className="group relative p-2.5 text-gray-300 hover:text-gold-400 hover:bg-white/5 rounded-xl transition-all duration-200"
+              className="group relative p-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200"
               aria-label="View saved items"
             >
               <Heart className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
               {wishlistCount > 0 && (
-                <span className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse">
+                <span className="absolute top-1 right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[10px] font-bold flex items-center justify-center animate-pulse shadow-sm">
                   {wishlistCount}
                 </span>
               )}
@@ -191,13 +211,13 @@ export const Navbar: React.FC = () => {
             {/* Cart Button */}
             <button
               onClick={() => setIsCartOpen(true)}
-              className="relative p-2.5 text-gray-300 hover:text-gold-400 hover:bg-white/5 rounded-xl transition-all duration-200 flex items-center gap-2 group"
+              className="relative p-2.5 text-slate-600 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-200 flex items-center gap-2 group"
               aria-label="Open shopping bag"
             >
               <div className="relative">
-                <ShoppingBag className="w-4 h-4 group-hover:text-gold-400 transition-colors" />
+                <ShoppingBag className="w-4 h-4 transition-transform duration-200 group-hover:scale-110" />
                 {itemCount > 0 && (
-                  <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-gold-500 text-black text-[10px] font-extrabold flex items-center justify-center shadow-md shadow-gold-500/50">
+                  <span className="absolute -top-1.5 -right-2 w-4 h-4 rounded-full bg-slate-900 text-white text-[10px] font-extrabold flex items-center justify-center shadow-sm">
                     {itemCount}
                   </span>
                 )}
@@ -208,13 +228,13 @@ export const Navbar: React.FC = () => {
             <div className="relative">
               <button
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl bg-[#121722]/85 hover:bg-[#19202d] border border-white/10 hover:border-gold-400/35 text-xs font-semibold text-gray-200 shadow-sm transition-all duration-200"
+                className="flex items-center gap-1.5 p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200 text-xs font-semibold text-slate-800 shadow-sm transition-all duration-200"
               >
-                <User className="w-4 h-4 text-gold-400" />
-                <span className="hidden sm:inline max-w-[100px] truncate">
-                  {user ? user.fullName.split(' ')[0] : 'Sign In'}
+                <User className="w-4 h-4 text-amber-600" />
+                <span className="hidden sm:inline max-w-[90px] truncate font-medium">
+                  {user ? user.fullName.split(' ')[0] : 'Account'}
                 </span>
-                <ChevronDown className="w-3.5 h-3.5 text-gray-400 hidden sm:inline" />
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 hidden sm:inline" />
               </button>
 
               {/* User Dropdown */}
@@ -224,25 +244,31 @@ export const Navbar: React.FC = () => {
                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                     animate={{ opacity: 1, y: 0, scale: 1 }}
                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                    className="absolute right-0 mt-2 w-64 rounded-2xl glass-panel bg-surface-200 border border-border-light shadow-2xl p-3 z-50 space-y-2"
+                    className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-slate-200 shadow-xl p-3 z-50 space-y-2 text-slate-800"
                   >
                     {user ? (
                       <div>
-                        <div className="px-3 py-2 border-b border-border-subtle mb-2">
-                          <p className="text-xs font-bold text-white truncate">{user.fullName}</p>
-                          <p className="text-[11px] text-gray-400 truncate">{user.email}</p>
-                          <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-gold-500/10 text-gold-400 border border-gold-500/20">
-                            {user.role}
-                          </span>
+                        <div className="px-3 py-2 border-b border-slate-100 mb-2">
+                          <p className="text-xs font-bold text-slate-900 truncate">{user.fullName}</p>
+                          <p className="text-[11px] text-slate-500 truncate">{user.email}</p>
+                          {isEffectiveAdmin ? (
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-extrabold uppercase tracking-wider bg-amber-100 text-amber-900 border border-amber-300">
+                              ADMIN
+                            </span>
+                          ) : (
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded text-[10px] font-semibold uppercase tracking-wider bg-slate-100 text-slate-700 border border-slate-200">
+                              {user.role}
+                            </span>
+                          )}
                         </div>
 
-                        {isAdmin && (
+                        {isEffectiveAdmin && (
                           <Link
                             href="/admin"
                             onClick={() => setIsUserMenuOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-semibold text-gold-400 hover:bg-gold-500/10 rounded-xl transition-colors"
+                            className="flex items-center gap-2.5 px-3 py-2 text-xs font-bold text-amber-900 bg-amber-50/90 hover:bg-amber-100 rounded-xl transition-colors border border-amber-200/80 mb-1"
                           >
-                            <LayoutDashboard className="w-4 h-4" />
+                            <LayoutDashboard className="w-4 h-4 text-amber-700" />
                             <span>Admin Portal</span>
                           </Link>
                         )}
@@ -250,28 +276,28 @@ export const Navbar: React.FC = () => {
                         <Link
                           href="/account"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                          className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
                         >
-                          <User className="w-4 h-4" />
+                          <User className="w-4 h-4 text-slate-500" />
                           <span>My Account</span>
                         </Link>
 
                         <Link
                           href="/account/orders"
                           onClick={() => setIsUserMenuOpen(false)}
-                          className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-gray-300 hover:text-white hover:bg-white/5 rounded-xl transition-colors"
+                          className="flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-xl transition-colors"
                         >
-                          <ShoppingBag className="w-4 h-4" />
+                          <Package className="w-4 h-4 text-slate-500" />
                           <span>My Orders & Tracking</span>
                         </Link>
 
-                        <div className="pt-2 border-t border-border-subtle mt-2">
+                        <div className="pt-2 border-t border-slate-100 mt-2">
                           <button
                             onClick={() => {
                               logout();
                               setIsUserMenuOpen(false);
                             }}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-400 hover:bg-rose-500/10 rounded-xl transition-colors"
+                            className="w-full flex items-center gap-2.5 px-3 py-2 text-xs font-medium text-rose-600 hover:bg-rose-50 rounded-xl transition-colors"
                           >
                             <LogOut className="w-4 h-4" />
                             <span>Sign Out</span>
@@ -280,14 +306,14 @@ export const Navbar: React.FC = () => {
                       </div>
                     ) : (
                       <div className="p-2 space-y-2 text-center">
-                        <p className="text-xs text-gray-300 font-medium">Collector Access</p>
+                        <p className="text-xs text-slate-600 font-medium">Collector Access</p>
                         <button
                           onClick={() => {
                             setAuthModalMode('login');
                             setIsAuthModalOpen(true);
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full py-2 px-3 rounded-xl bg-white text-black text-xs font-bold hover:bg-gray-200 transition-colors"
+                          className="w-full py-2 px-3 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-colors shadow-sm"
                         >
                           Sign In
                         </button>
@@ -297,7 +323,7 @@ export const Navbar: React.FC = () => {
                             setIsAuthModalOpen(true);
                             setIsUserMenuOpen(false);
                           }}
-                          className="w-full py-2 px-3 rounded-xl bg-surface-50 text-gold-400 border border-gold-500/30 text-xs font-bold hover:bg-gold-500/10 transition-colors"
+                          className="w-full py-2 px-3 rounded-xl bg-slate-50 text-amber-800 border border-amber-300/80 text-xs font-bold hover:bg-amber-50 transition-colors"
                         >
                           Create Account
                         </button>
@@ -320,31 +346,31 @@ export const Navbar: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsSearchOpen(false)}
-              className="fixed inset-0 bg-black/85 backdrop-blur-md"
+              className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
             />
 
             <motion.div
               initial={{ opacity: 0, y: -20, scale: 0.98 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.98 }}
-              className="relative w-full max-w-2xl bg-surface-200 border border-border-light rounded-2xl shadow-2xl overflow-hidden z-10"
+              className="relative w-full max-w-2xl bg-white border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-10 text-slate-900"
             >
               {/* Search Form */}
-              <form onSubmit={handleSearchSubmit} className="p-4 border-b border-border-light flex items-center gap-3">
-                <Search className="w-5 h-5 text-gold-400 shrink-0" />
+              <form onSubmit={handleSearchSubmit} className="p-4 border-b border-slate-200 flex items-center gap-3">
+                <Search className="w-5 h-5 text-amber-600 shrink-0" />
                 <input
                   ref={searchInputRef}
                   type="text"
                   placeholder="Search timepieces, acoustic monitors, leather bags, or SKU..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="flex-1 bg-transparent text-white placeholder-gray-500 text-sm font-medium focus:outline-none"
+                  className="flex-1 bg-transparent text-slate-900 placeholder-slate-400 text-sm font-medium focus:outline-none"
                 />
                 {searchQuery && (
                   <button
                     type="button"
                     onClick={() => setSearchQuery('')}
-                    className="p-1 text-gray-400 hover:text-white"
+                    className="p-1 text-slate-400 hover:text-slate-700"
                   >
                     <X className="w-4 h-4" />
                   </button>
@@ -352,7 +378,7 @@ export const Navbar: React.FC = () => {
                 <button
                   type="button"
                   onClick={() => setIsSearchOpen(false)}
-                  className="px-2.5 py-1 text-xs text-gray-400 hover:text-white rounded-lg bg-surface-100"
+                  className="px-2.5 py-1 text-xs text-slate-500 hover:text-slate-800 rounded-lg bg-slate-100 font-medium"
                 >
                   ESC
                 </button>
@@ -363,41 +389,41 @@ export const Navbar: React.FC = () => {
                 {searchQuery.trim() ? (
                   searchResults.length > 0 ? (
                     <div className="space-y-2">
-                      <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 px-2">
-                        Products ({searchResults.length})
+                      <p className="text-xs font-semibold uppercase tracking-wider text-slate-400 px-2">
+                        Matching Pieces ({searchResults.length})
                       </p>
                       {searchResults.map((product) => (
                         <Link
                           key={product.id}
                           href={`/products/${product.slug}`}
                           onClick={() => setIsSearchOpen(false)}
-                          className="flex items-center gap-3.5 p-2 rounded-xl hover:bg-surface-100/80 transition-colors group"
+                          className="flex items-center gap-3.5 p-2 rounded-xl hover:bg-slate-50 transition-colors group border border-transparent hover:border-slate-200"
                         >
-                          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-surface-100 shrink-0 border border-white/5">
+                          <div className="relative w-12 h-12 rounded-lg overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
                             <Image src={product.images[0]} alt={product.title} fill className="object-cover" />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h4 className="text-xs font-semibold text-white group-hover:text-gold-400 transition-colors truncate">
+                            <h4 className="text-xs font-semibold text-slate-900 group-hover:text-amber-700 transition-colors truncate">
                               {product.title}
                             </h4>
-                            <p className="text-[11px] text-gray-400">
+                            <p className="text-[11px] text-slate-500">
                               {product.brandName} • {product.categoryName}
                             </p>
                           </div>
-                          <span className="text-xs font-bold text-white shrink-0">
+                          <span className="text-xs font-bold text-slate-900 shrink-0">
                             {formatPrice(product.price)}
                           </span>
                         </Link>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-8 text-gray-400 text-xs">
+                    <div className="text-center py-8 text-slate-500 text-xs">
                       No matching luxury pieces found for &quot;{searchQuery}&quot;.
                     </div>
                   )
                 ) : (
                   <div>
-                    <p className="text-xs font-semibold uppercase tracking-wider text-gray-400 mb-2">
+                    <p className="text-xs font-semibold uppercase tracking-wider text-slate-500 mb-2">
                       Trending Collections
                     </p>
                     <div className="flex flex-wrap gap-2">
@@ -408,7 +434,7 @@ export const Navbar: React.FC = () => {
                             router.push(`/shop?category=${cat.slug}`);
                             setIsSearchOpen(false);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-surface-100 hover:bg-surface-50 border border-border-light text-xs text-gray-300 hover:text-white transition-colors"
+                          className="px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 border border-slate-200 text-xs text-slate-700 hover:text-slate-900 transition-colors font-medium"
                         >
                           {cat.name}
                         </button>
@@ -418,7 +444,7 @@ export const Navbar: React.FC = () => {
                           router.push('/shop?badge=BEST+SELLER');
                           setIsSearchOpen(false);
                         }}
-                        className="px-3 py-1.5 rounded-xl bg-gold-500/10 border border-gold-500/30 text-xs text-gold-400"
+                        className="px-3 py-1.5 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-800 font-semibold"
                       >
                         Best Sellers
                       </button>
@@ -440,7 +466,7 @@ export const Navbar: React.FC = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileMenuOpen(false)}
-              className="fixed inset-0 bg-black/80 backdrop-blur-sm"
+              className="fixed inset-0 bg-slate-900/50 backdrop-blur-sm"
             />
 
             <motion.div
@@ -448,38 +474,42 @@ export const Navbar: React.FC = () => {
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
               transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-              className="fixed inset-y-0 left-0 w-4/5 max-w-sm bg-surface-200 border-r border-border-light shadow-2xl p-6 flex flex-col justify-between"
+              className="fixed inset-y-0 left-0 w-4/5 max-w-sm bg-white border-r border-slate-200 shadow-2xl p-6 flex flex-col justify-between text-slate-900"
             >
               <div>
-                <div className="flex items-center justify-between pb-6 border-b border-border-light">
+                <div className="flex items-center justify-between pb-5 border-b border-slate-100">
                   <span className="leading-none uppercase font-display">
-                    <span className="block text-lg font-extrabold tracking-[0.12em] text-white">LUXE <span className="font-medium text-gold-400">ATELIER</span></span>
-                    <span className="block mt-1 text-[8px] font-bold tracking-[0.32em] text-gold-400/90">HOME</span>
+                    <span className="block text-base font-extrabold tracking-[0.14em] text-slate-900">
+                      LUXE <span className="font-semibold text-amber-600">ATELIER</span>
+                    </span>
+                    <span className="block mt-0.5 text-[8px] font-bold tracking-[0.32em] text-slate-400">
+                      CURATED STORE
+                    </span>
                   </span>
                   <button
                     onClick={() => setIsMobileMenuOpen(false)}
-                    className="p-2 text-gray-400 hover:text-white"
+                    className="p-2 text-slate-400 hover:text-slate-700 rounded-lg hover:bg-slate-100"
                   >
                     <X className="w-5 h-5" />
                   </button>
                 </div>
 
-                <nav className="mt-6 space-y-3">
+                <nav className="mt-6 space-y-2">
                   {navLinks.map((link) => (
                     <Link
                       key={link.label}
                       href={link.href}
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block text-sm font-semibold uppercase tracking-wider text-gray-300 hover:text-gold-400 py-2 border-b border-white/5"
+                      className="block text-sm font-semibold uppercase tracking-wider text-slate-700 hover:text-amber-700 py-2.5 px-2 rounded-lg hover:bg-slate-50 transition-colors"
                     >
                       {link.label}
                     </Link>
                   ))}
-                  {isAdmin && (
+                  {isEffectiveAdmin && (
                     <Link
                       href="/admin"
                       onClick={() => setIsMobileMenuOpen(false)}
-                      className="block text-sm font-semibold uppercase tracking-wider text-gold-400 py-2"
+                      className="block text-sm font-semibold uppercase tracking-wider text-amber-800 py-2.5 px-2 rounded-lg bg-amber-50"
                     >
                       Admin Dashboard
                     </Link>
@@ -487,10 +517,10 @@ export const Navbar: React.FC = () => {
                 </nav>
               </div>
 
-              <div className="pt-6 border-t border-border-light space-y-2">
+              <div className="pt-6 border-t border-slate-100 space-y-3">
                 {!user ? (
                   <>
-                    <p className="text-xs text-gray-400">Collector Access</p>
+                    <p className="text-xs text-slate-500 font-medium">Collector Access</p>
                     <div className="flex gap-2">
                       <button
                         onClick={() => {
@@ -498,7 +528,7 @@ export const Navbar: React.FC = () => {
                           setIsAuthModalOpen(true);
                           setIsMobileMenuOpen(false);
                         }}
-                        className="flex-1 py-2 rounded-xl bg-surface-100 text-xs font-semibold text-gray-200"
+                        className="flex-1 py-2.5 rounded-xl bg-slate-900 text-xs font-bold text-white shadow-sm"
                       >
                         Sign In
                       </button>
@@ -508,7 +538,7 @@ export const Navbar: React.FC = () => {
                           setIsAuthModalOpen(true);
                           setIsMobileMenuOpen(false);
                         }}
-                        className="flex-1 py-2 rounded-xl bg-gold-500/10 border border-gold-500/30 text-xs font-semibold text-gold-400"
+                        className="flex-1 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-800"
                       >
                         Register
                       </button>
@@ -520,7 +550,7 @@ export const Navbar: React.FC = () => {
                       logout();
                       setIsMobileMenuOpen(false);
                     }}
-                    className="w-full py-2 rounded-xl bg-rose-500/10 border border-rose-500/30 text-xs font-semibold text-rose-400"
+                    className="w-full py-2.5 rounded-xl bg-rose-50 border border-rose-200 text-xs font-semibold text-rose-700"
                   >
                     Sign Out
                   </button>

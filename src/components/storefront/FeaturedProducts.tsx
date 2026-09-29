@@ -24,29 +24,29 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products }) 
   });
 
   return (
-    <section className="py-24 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <section className="py-12 sm:py-16">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header & Filter Tabs */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 gap-6">
+        <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4">
           <div>
-            <div className="flex items-center gap-2 text-gold-400 text-xs font-bold uppercase tracking-widest mb-1">
+            <div className="flex items-center gap-1.5 text-amber-700 text-xs font-bold uppercase tracking-widest mb-1">
               <Sparkles className="w-3.5 h-3.5" />
               <span>Curated Selection</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-display">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
               Featured Highlights
             </h2>
           </div>
 
           {/* Filter Pills */}
-          <div className="flex flex-wrap gap-2 p-1.5 rounded-2xl bg-surface-100/90 border border-border-light">
+          <div className="flex flex-wrap gap-1.5 p-1 rounded-2xl bg-slate-100/90 border border-slate-200">
             <button
               onClick={() => setActiveTab('all')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs font-semibold tracking-wider transition-all',
+                'px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider transition-all',
                 activeTab === 'all'
-                  ? 'bg-white text-black font-bold shadow-md'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-white text-slate-900 font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               )}
             >
               All Pieces
@@ -54,10 +54,10 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products }) 
             <button
               onClick={() => setActiveTab('bestsellers')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs font-semibold tracking-wider transition-all',
+                'px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider transition-all',
                 activeTab === 'bestsellers'
-                  ? 'bg-gold-500 text-black font-bold shadow-md shadow-gold-500/20'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-amber-600 text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               )}
             >
               Best Sellers
@@ -65,10 +65,10 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products }) 
             <button
               onClick={() => setActiveTab('new')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs font-semibold tracking-wider transition-all',
+                'px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider transition-all',
                 activeTab === 'new'
-                  ? 'bg-cyan-500 text-black font-bold shadow-md shadow-cyan-500/20'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-slate-900 text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               )}
             >
               New Arrivals
@@ -76,37 +76,37 @@ export const FeaturedProducts: React.FC<FeaturedProductsProps> = ({ products }) 
             <button
               onClick={() => setActiveTab('limited')}
               className={cn(
-                'px-4 py-2 rounded-xl text-xs font-semibold tracking-wider transition-all',
+                'px-3.5 py-1.5 rounded-xl text-xs font-semibold tracking-wider transition-all',
                 activeTab === 'limited'
-                  ? 'bg-purple-600 text-white font-bold shadow-md shadow-purple-600/20'
-                  : 'text-gray-400 hover:text-white'
+                  ? 'bg-rose-600 text-white font-bold shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
               )}
             >
-              Limited Editions
+              Vault Deals
             </button>
           </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {filteredProducts.slice(0, 8).map((product, index) => (
+        {/* Compact Product Grid: 4-5 cards on desktop, 3-4 on tablet, 2 on mobile */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5">
+          {filteredProducts.slice(0, 10).map((product, index) => (
             <ProductCard
               key={product.id}
               product={product}
-              priority={index < 4}
+              priority={index < 5}
               onQuickView={(p) => setQuickViewProduct(p)}
             />
           ))}
         </div>
 
         {/* Bottom CTA */}
-        <div className="mt-14 text-center">
+        <div className="mt-12 text-center">
           <Link
             href="/shop"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-2xl bg-surface-100 hover:bg-surface-50 text-white font-semibold text-xs uppercase tracking-widest border border-border-light hover:border-gold-500/50 shadow-xl transition-all group"
+            className="inline-flex items-center gap-2 px-7 py-3 rounded-2xl bg-white hover:bg-slate-50 text-slate-800 font-bold text-xs uppercase tracking-wider border border-slate-200 shadow-sm hover:shadow transition-all group"
           >
-            <span>Explore Entire Luxury Catalog</span>
-            <ArrowRight className="w-4 h-4 text-gold-400 group-hover:translate-x-1 transition-transform" />
+            <span>Explore Entire Master Catalog</span>
+            <ArrowRight className="w-4 h-4 text-amber-600 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
       </div>

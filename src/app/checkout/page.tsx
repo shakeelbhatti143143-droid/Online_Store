@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import {
   ShieldCheck,
   CheckCircle2,
@@ -13,11 +13,10 @@ import {
   Truck,
   User,
   MapPin,
-  ChevronRight,
   ArrowLeft,
   ArrowRight,
   Sparkles,
-  Zap,
+  Check,
 } from 'lucide-react';
 import { useCart } from '@/context/CartContext';
 import { useAuth } from '@/context/AuthContext';
@@ -31,7 +30,14 @@ type CheckoutStep = 1 | 2 | 3 | 4;
 
 export default function CheckoutPage() {
   const router = useRouter();
-  const { items, subtotal, discountAmount, shippingAmount, taxAmount, total, appliedCoupon, clearCart } = useCart();
+  const {
+    items,
+    subtotal,
+    discountAmount,
+    taxAmount,
+    appliedCoupon,
+    clearCart,
+  } = useCart();
   const { user } = useAuth();
   const { showToast } = useToast();
 
@@ -39,9 +45,15 @@ export default function CheckoutPage() {
   const [isProcessing, setIsProcessing] = useState(false);
 
   // Step 1: Customer Information
-  const [email, setEmail] = useState(user?.email || 'alexandra.vance@luxury.com');
-  const [fullName, setFullName] = useState(user?.fullName || 'Alexandra Vance');
-  const [phone, setPhone] = useState(user?.phone || '+1 (555) 234-5678');
+  const [email, setEmail] = useState(
+    user?.email || 'alexandra.vance@luxury.com'
+  );
+  const [fullName, setFullName] = useState(
+    user?.fullName || 'Alexandra Vance'
+  );
+  const [phone, setPhone] = useState(
+    user?.phone || '+1 (555) 234-5678'
+  );
 
   // Step 2: Shipping Address
   const [addressLine1, setAddressLine1] = useState('740 Park Avenue');
@@ -52,24 +64,41 @@ export default function CheckoutPage() {
   const [country, setCountry] = useState('United States');
 
   // Step 3: Delivery Method
-  const [deliveryMethod, setDeliveryMethod] = useState<'standard' | 'express' | 'priority'>('express');
+  const [deliveryMethod, setDeliveryMethod] = useState<
+    'standard' | 'express' | 'priority'
+  >('express');
 
   // Step 4: Payment Details
-  const [paymentMethod, setPaymentMethod] = useState<'card' | 'apple_pay' | 'paypal' | 'cod'>('card');
-  const [cardNumber, setCardNumber] = useState('4242 •••• •••• 4242');
-  const [cardHolder, setCardHolder] = useState(user?.fullName || 'ALEXANDRA VANCE');
+  const [paymentMethod, setPaymentMethod] = useState<
+    'card' | 'apple_pay' | 'paypal' | 'cod'
+  >('card');
+  const [cardNumber, setCardNumber] = useState(
+    '4242 •••• •••• 4242'
+  );
+  const [cardHolder, setCardHolder] = useState(
+    user?.fullName || 'ALEXANDRA VANCE'
+  );
   const [cardExpiry, setCardExpiry] = useState('12/28');
   const [cardCvc, setCardCvc] = useState('888');
 
   // Redirect if cart is empty
   if (items.length === 0) {
     return (
-      <div className="pt-32 pb-24 min-h-[70vh] flex items-center justify-center">
+      <div className="pt-32 pb-24 min-h-[70vh] flex items-center justify-center bg-white">
         <div className="text-center max-w-md px-4">
-          <h2 className="text-2xl font-bold text-white">Your bag is empty</h2>
-          <p className="text-xs text-gray-400 mt-2">Add items to your bag before proceeding to checkout.</p>
+          <div className="w-16 h-16 mx-auto mb-5 rounded-2xl bg-amber-50 border border-amber-200 flex items-center justify-center text-amber-700">
+            <Lock className="w-8 h-8" />
+          </div>
+          <h2 className="text-2xl font-bold text-slate-900 font-display">
+            Your bag is empty
+          </h2>
+          <p className="text-xs text-slate-500 mt-2">
+            Add items to your bag before proceeding to the checkout concierge.
+          </p>
           <Link href="/shop" className="mt-6 inline-block">
-            <Button variant="gold" size="md">Return to Catalog</Button>
+            <Button variant="gold" size="md">
+              Return to Catalog
+            </Button>
           </Link>
         </div>
       </div>
@@ -83,19 +112,37 @@ export default function CheckoutPage() {
     priority: 25,
   };
   const finalShipping = deliveryCosts[deliveryMethod];
-  const finalTotal = Math.max(0, subtotal - discountAmount + finalShipping + taxAmount);
+  const finalTotal = Math.max(
+    0,
+    subtotal - discountAmount + finalShipping + taxAmount
+  );
 
   // Form Validation
-  const canProceedStep1 = Boolean(email.trim() && fullName.trim() && phone.trim());
-  const canProceedStep2 = Boolean(addressLine1.trim() && city.trim() && state.trim() && postalCode.trim());
+  const canProceedStep1 = Boolean(
+    email.trim() && fullName.trim() && phone.trim()
+  );
+  const canProceedStep2 = Boolean(
+    addressLine1.trim() &&
+      city.trim() &&
+      state.trim() &&
+      postalCode.trim()
+  );
 
   const handleNext = () => {
     if (currentStep === 1 && !canProceedStep1) {
-      showToast({ type: 'warning', title: 'Missing Information', message: 'Please complete all customer details.' });
+      showToast({
+        type: 'warning',
+        title: 'Missing Information',
+        message: 'Please complete all customer details.',
+      });
       return;
     }
     if (currentStep === 2 && !canProceedStep2) {
-      showToast({ type: 'warning', title: 'Incomplete Address', message: 'Please fill in required address fields.' });
+      showToast({
+        type: 'warning',
+        title: 'Incomplete Address',
+        message: 'Please fill in required address fields.',
+      });
       return;
     }
     setCurrentStep((prev) => Math.min(4, prev + 1) as CheckoutStep);
@@ -131,7 +178,10 @@ export default function CheckoutPage() {
       });
 
       try {
-        sessionStorage.setItem('luxe_last_order', JSON.stringify(createdOrder));
+        sessionStorage.setItem(
+          'luxe_last_order',
+          JSON.stringify(createdOrder)
+        );
       } catch {
         // ignore
       }
@@ -147,28 +197,34 @@ export default function CheckoutPage() {
       });
 
       // Redirect to confirmation receipt
-      router.push(`/order-success?orderNumber=${createdOrder.orderNumber}`);
+      router.push(
+        `/order-success?orderNumber=${createdOrder.orderNumber}`
+      );
     } catch (err) {
       showToast({
         type: 'error',
         title: 'Payment Error',
-        message: err instanceof Error ? err.message : 'Could not process transaction. Please try again.',
+        message:
+          err instanceof Error
+            ? err.message
+            : 'Could not process transaction. Please try again.',
       });
       setIsProcessing(false);
     }
   };
 
   return (
-    <div className="pt-28 pb-24 min-h-screen">
+    <div className="min-h-screen bg-white pt-28 pb-24 text-slate-900">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
         {/* Step Indicator Header */}
-        <div className="mb-10 pb-6 border-b border-border-light">
-          <div className="flex items-center gap-2 text-gold-400 text-xs font-bold uppercase tracking-widest mb-1">
+        <div className="mb-10 pb-6 border-b border-slate-100">
+          <div className="flex items-center gap-2 text-amber-700 text-xs font-bold uppercase tracking-widest mb-1">
             <Lock className="w-3.5 h-3.5" />
             <span>Encrypted Multi-Step Checkout</span>
           </div>
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white tracking-tight font-display">
-            Secure Payment & Fulfillment
+          <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-900 tracking-tight font-display">
+            Secure Payment & Delivery
           </h1>
 
           {/* Stepper Wizard Bar */}
@@ -185,29 +241,37 @@ export default function CheckoutPage() {
                 <button
                   key={step.num}
                   disabled={step.num > currentStep}
-                  onClick={() => setCurrentStep(step.num as CheckoutStep)}
+                  onClick={() =>
+                    setCurrentStep(step.num as CheckoutStep)
+                  }
                   className={cn(
                     'flex items-center gap-2 p-2.5 rounded-xl border text-left transition-all',
                     isCurrent
-                      ? 'bg-gold-500/10 border-gold-500 text-gold-400'
+                      ? 'bg-amber-50/80 border-amber-600 text-amber-900 shadow-xs'
                       : isDone
-                        ? 'bg-surface-100 border-border-light text-white'
-                        : 'bg-surface-300 border-white/5 text-gray-500 opacity-60 cursor-not-allowed'
+                        ? 'bg-slate-50 border-slate-200 text-slate-800'
+                        : 'bg-slate-50/50 border-slate-100 text-slate-400 opacity-60 cursor-not-allowed'
                   )}
                 >
                   <div
                     className={cn(
                       'w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold shrink-0',
                       isCurrent
-                        ? 'bg-gold-500 text-black'
+                        ? 'bg-amber-600 text-white'
                         : isDone
-                          ? 'bg-emerald-500 text-black'
-                          : 'bg-surface-100 text-gray-400'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-slate-200 text-slate-500'
                     )}
                   >
-                    {isDone ? <CheckCircle2 className="w-4 h-4" /> : step.num}
+                    {isDone ? (
+                      <Check className="w-3.5 h-3.5" />
+                    ) : (
+                      step.num
+                    )}
                   </div>
-                  <span className="text-xs font-semibold truncate hidden sm:inline">{step.title}</span>
+                  <span className="text-xs font-semibold truncate hidden sm:inline">
+                    {step.title}
+                  </span>
                 </button>
               );
             })}
@@ -216,9 +280,11 @@ export default function CheckoutPage() {
 
         {/* Content Layout */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
+
           {/* Main Wizard Forms (7 cols) */}
           <div className="lg:col-span-7 space-y-6">
-            <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-border-light bg-surface-200/80 space-y-6">
+            <div className="rounded-3xl bg-white p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+
               {/* STEP 1: CUSTOMER DETAILS */}
               {currentStep === 1 && (
                 <motion.div
@@ -226,9 +292,11 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-5"
                 >
-                  <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                    <User className="w-5 h-5 text-gold-400" />
-                    <h2 className="text-lg font-bold text-white">Step 1 — Customer Identification</h2>
+                  <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                    <User className="w-5 h-5 text-amber-600" />
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Step 1 — Customer Identification
+                    </h2>
                   </div>
 
                   <Input
@@ -258,8 +326,8 @@ export default function CheckoutPage() {
                     />
                   </div>
 
-                  <p className="text-xs text-gray-400">
-                    Order confirmation and courier live dispatch notifications will be dispatched to this email.
+                  <p className="text-xs text-slate-500">
+                    Order confirmation and courier live dispatch notifications will be delivered to this email.
                   </p>
                 </motion.div>
               )}
@@ -271,9 +339,11 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-5"
                 >
-                  <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                    <MapPin className="w-5 h-5 text-gold-400" />
-                    <h2 className="text-lg font-bold text-white">Step 2 — Shipping Destination</h2>
+                  <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                    <MapPin className="w-5 h-5 text-amber-600" />
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Step 2 — Shipping Destination
+                    </h2>
                   </div>
 
                   <Input
@@ -316,13 +386,13 @@ export default function CheckoutPage() {
                   </div>
 
                   <div>
-                    <label className="block text-xs font-medium uppercase tracking-wider text-gray-300 mb-1.5">
+                    <label className="block text-xs font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                       Country
                     </label>
                     <select
                       value={country}
                       onChange={(e) => setCountry(e.target.value)}
-                      className="w-full bg-surface-100 border border-border-light text-white text-xs font-semibold rounded-xl px-4 py-2.5 focus:outline-none focus:border-gold-500"
+                      className="w-full bg-slate-50 border border-slate-200 text-slate-900 text-xs font-semibold rounded-xl px-4 py-2.5 focus:outline-none focus:border-amber-600"
                     >
                       <option value="United States">United States</option>
                       <option value="United Kingdom">United Kingdom</option>
@@ -330,7 +400,9 @@ export default function CheckoutPage() {
                       <option value="France">France</option>
                       <option value="Germany">Germany</option>
                       <option value="Japan">Japan</option>
-                      <option value="United Arab Emirates">United Arab Emirates</option>
+                      <option value="United Arab Emirates">
+                        United Arab Emirates
+                      </option>
                     </select>
                   </div>
                 </motion.div>
@@ -343,9 +415,11 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-4"
                 >
-                  <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                    <Truck className="w-5 h-5 text-gold-400" />
-                    <h2 className="text-lg font-bold text-white">Step 3 — Delivery Concierge</h2>
+                  <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                    <Truck className="w-5 h-5 text-amber-600" />
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Step 3 — Delivery Concierge
+                    </h2>
                   </div>
 
                   <div className="space-y-3">
@@ -375,25 +449,33 @@ export default function CheckoutPage() {
                       <button
                         key={option.id}
                         type="button"
-                        onClick={() => setDeliveryMethod(option.id as any)}
+                        onClick={() =>
+                          setDeliveryMethod(option.id as any)
+                        }
                         className={cn(
                           'w-full p-4 rounded-2xl border text-left transition-all flex items-start justify-between gap-4',
                           deliveryMethod === option.id
-                            ? 'bg-gold-500/10 border-gold-500 shadow-md shadow-gold-500/10'
-                            : 'bg-surface-100 border-border-light hover:border-white/20'
+                            ? 'bg-amber-50/80 border-amber-600 shadow-sm ring-1 ring-amber-600/20'
+                            : 'bg-white border-slate-200 hover:border-slate-300 hover:bg-slate-50'
                         )}
                       >
                         <div className="space-y-1">
                           <div className="flex items-center gap-2">
-                            <span className="text-xs font-bold text-white">{option.title}</span>
-                            <span className="text-[10px] px-2 py-0.5 rounded bg-surface-50 text-gold-400 font-mono">
+                            <span className="text-xs font-bold text-slate-900">
+                              {option.title}
+                            </span>
+                            <span className="text-[10px] px-2 py-0.5 rounded bg-amber-100 text-amber-800 font-mono font-medium">
                               {option.time}
                             </span>
                           </div>
-                          <p className="text-xs text-gray-400">{option.desc}</p>
+                          <p className="text-xs text-slate-500">
+                            {option.desc}
+                          </p>
                         </div>
-                        <span className="text-xs font-bold text-white shrink-0">
-                          {option.price === 0 ? 'FREE' : formatPrice(option.price)}
+                        <span className="text-xs font-bold text-slate-900 shrink-0">
+                          {option.price === 0
+                            ? 'FREE'
+                            : formatPrice(option.price)}
                         </span>
                       </button>
                     ))}
@@ -408,9 +490,11 @@ export default function CheckoutPage() {
                   animate={{ opacity: 1, x: 0 }}
                   className="space-y-6"
                 >
-                  <div className="flex items-center gap-2 pb-2 border-b border-border-subtle">
-                    <CreditCard className="w-5 h-5 text-gold-400" />
-                    <h2 className="text-lg font-bold text-white">Step 4 — Payment Architecture</h2>
+                  <div className="flex items-center gap-2 pb-3 border-b border-slate-100">
+                    <CreditCard className="w-5 h-5 text-amber-600" />
+                    <h2 className="text-lg font-bold text-slate-900">
+                      Step 4 — Payment Concierge
+                    </h2>
                   </div>
 
                   {/* Payment Method Selector */}
@@ -424,12 +508,14 @@ export default function CheckoutPage() {
                       <button
                         key={m.id}
                         type="button"
-                        onClick={() => setPaymentMethod(m.id as any)}
+                        onClick={() =>
+                          setPaymentMethod(m.id as any)
+                        }
                         className={cn(
                           'py-2.5 px-3 rounded-xl border text-xs font-bold transition-all',
                           paymentMethod === m.id
-                            ? 'bg-gold-500/20 text-gold-300 border-gold-500'
-                            : 'bg-surface-100 border-border-light text-gray-400 hover:text-white'
+                            ? 'bg-amber-50 border-amber-600 text-amber-900 shadow-xs ring-1 ring-amber-600/30'
+                            : 'bg-white border-slate-200 text-slate-600 hover:border-slate-300 hover:text-slate-900 hover:bg-slate-50'
                         )}
                       >
                         {m.label}
@@ -439,15 +525,15 @@ export default function CheckoutPage() {
 
                   {paymentMethod === 'card' ? (
                     <div className="space-y-5">
-                      {/* Interactive Credit Card Mockup */}
-                      <div className="relative aspect-[1.58/1] w-full max-w-sm mx-auto rounded-2xl bg-gradient-to-tr from-zinc-900 via-stone-900 to-black p-6 border border-gold-500/40 shadow-2xl flex flex-col justify-between overflow-hidden">
-                        <div className="absolute top-0 right-0 w-48 h-48 bg-gold-500/10 rounded-full blur-2xl pointer-events-none" />
+                      {/* Interactive Obsidian Credit Card Mockup */}
+                      <div className="relative aspect-[1.58/1] w-full max-w-sm mx-auto rounded-2xl bg-gradient-to-tr from-slate-950 via-slate-900 to-zinc-900 p-6 border border-amber-500/40 shadow-xl flex flex-col justify-between overflow-hidden text-white">
+                        <div className="absolute top-0 right-0 w-48 h-48 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
 
                         <div className="flex justify-between items-center z-10">
-                          <span className="text-xs font-mono font-bold tracking-widest text-gold-400">
+                          <span className="text-xs font-mono font-bold tracking-widest text-amber-400">
                             LUXE BLACK TITANIUM
                           </span>
-                          <Sparkles className="w-5 h-5 text-gold-400" />
+                          <Sparkles className="w-5 h-5 text-amber-400" />
                         </div>
 
                         <div className="z-10">
@@ -458,12 +544,20 @@ export default function CheckoutPage() {
 
                         <div className="flex justify-between items-end z-10 text-[11px] font-mono">
                           <div>
-                            <p className="text-[9px] uppercase tracking-wider text-gray-400">Cardholder</p>
-                            <p className="font-bold text-white uppercase">{cardHolder || 'CARDHOLDER'}</p>
+                            <p className="text-[9px] uppercase tracking-wider text-slate-400">
+                              Cardholder
+                            </p>
+                            <p className="font-bold text-white uppercase">
+                              {cardHolder || 'CARDHOLDER'}
+                            </p>
                           </div>
                           <div>
-                            <p className="text-[9px] uppercase tracking-wider text-gray-400">Expires</p>
-                            <p className="font-bold text-white">{cardExpiry || 'MM/YY'}</p>
+                            <p className="text-[9px] uppercase tracking-wider text-slate-400">
+                              Expires
+                            </p>
+                            <p className="font-bold text-white">
+                              {cardExpiry || 'MM/YY'}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -481,7 +575,9 @@ export default function CheckoutPage() {
                           <Input
                             label="Expiration Date"
                             value={cardExpiry}
-                            onChange={(e) => setCardExpiry(e.target.value)}
+                            onChange={(e) =>
+                              setCardExpiry(e.target.value)
+                            }
                             placeholder="MM/YY"
                           />
                           <Input
@@ -495,22 +591,30 @@ export default function CheckoutPage() {
                         <Input
                           label="Cardholder Name"
                           value={cardHolder}
-                          onChange={(e) => setCardHolder(e.target.value)}
+                          onChange={(e) =>
+                            setCardHolder(e.target.value)
+                          }
                           placeholder="Name on card"
                         />
                       </div>
                     </div>
                   ) : (
-                    <div className="p-6 rounded-2xl bg-surface-100 border border-white/5 text-center space-y-2">
-                      <p className="text-sm font-bold text-white">
-                        {paymentMethod === 'apple_pay' && 'Apple Pay One-Touch Express'}
-                        {paymentMethod === 'paypal' && 'PayPal Secure Wallet'}
-                        {paymentMethod === 'cod' && 'Pay on Delivery Inspection'}
+                    <div className="p-6 rounded-2xl bg-slate-50 border border-slate-200 text-center space-y-2">
+                      <p className="text-sm font-bold text-slate-900">
+                        {paymentMethod === 'apple_pay' &&
+                          'Apple Pay One-Touch Express'}
+                        {paymentMethod === 'paypal' &&
+                          'PayPal Secure Wallet'}
+                        {paymentMethod === 'cod' &&
+                          'Pay on Delivery Inspection'}
                       </p>
-                      <p className="text-xs text-gray-400">
-                        {paymentMethod === 'apple_pay' && 'Authenticate using FaceID or TouchID upon completing order.'}
-                        {paymentMethod === 'paypal' && 'You will be redirected securely to complete authorization.'}
-                        {paymentMethod === 'cod' && 'Present payment to courier after inspecting seals and authenticity certificate.'}
+                      <p className="text-xs text-slate-500">
+                        {paymentMethod === 'apple_pay' &&
+                          'Authenticate using FaceID or TouchID upon completing order.'}
+                        {paymentMethod === 'paypal' &&
+                          'You will be redirected securely to complete authorization.'}
+                        {paymentMethod === 'cod' &&
+                          'Present payment to courier after inspecting seals and authenticity certificate.'}
                       </p>
                     </div>
                   )}
@@ -518,20 +622,28 @@ export default function CheckoutPage() {
               )}
 
               {/* Navigation Controls */}
-              <div className="pt-4 border-t border-border-subtle flex items-center justify-between gap-4">
+              <div className="pt-4 border-t border-slate-100 flex items-center justify-between gap-4">
                 {currentStep > 1 ? (
                   <Button
                     type="button"
                     variant="outline"
                     size="md"
-                    onClick={() => setCurrentStep((prev) => (prev - 1) as CheckoutStep)}
+                    onClick={() =>
+                      setCurrentStep(
+                        (prev) => (prev - 1) as CheckoutStep
+                      )
+                    }
                     leftIcon={<ArrowLeft className="w-4 h-4" />}
                   >
                     Previous Step
                   </Button>
                 ) : (
                   <Link href="/cart">
-                    <Button variant="ghost" size="md" leftIcon={<ArrowLeft className="w-4 h-4" />}>
+                    <Button
+                      variant="ghost"
+                      size="md"
+                      leftIcon={<ArrowLeft className="w-4 h-4" />}
+                    >
                       Return to Bag
                     </Button>
                   </Link>
@@ -545,7 +657,12 @@ export default function CheckoutPage() {
                     onClick={handleNext}
                     rightIcon={<ArrowRight className="w-4 h-4" />}
                   >
-                    Continue to {currentStep === 1 ? 'Shipping' : currentStep === 2 ? 'Delivery' : 'Payment'}
+                    Continue to{' '}
+                    {currentStep === 1
+                      ? 'Shipping'
+                      : currentStep === 2
+                        ? 'Delivery'
+                        : 'Payment'}
                   </Button>
                 ) : (
                   <Button
@@ -554,37 +671,51 @@ export default function CheckoutPage() {
                     size="lg"
                     isLoading={isProcessing}
                     onClick={handlePlaceOrder}
-                    className="shadow-xl shadow-gold-500/25 font-bold"
+                    className="shadow-md shadow-amber-600/20 font-bold"
                     rightIcon={<ShieldCheck className="w-5 h-5" />}
                   >
                     Authorize & Complete Order ({formatPrice(finalTotal)})
                   </Button>
                 )}
               </div>
+
             </div>
           </div>
 
           {/* Right Summary Sidebar (5 cols) */}
           <div className="lg:col-span-5 space-y-6">
-            <div className="rounded-3xl glass-panel p-6 sm:p-8 border border-border-light bg-surface-200/90 space-y-6">
-              <h3 className="text-base font-bold text-white tracking-tight">Order Line Items ({items.length})</h3>
+            <div className="rounded-3xl bg-slate-50/80 p-6 sm:p-8 border border-slate-200/90 shadow-xs space-y-6">
+              <h3 className="text-base font-bold text-slate-900 tracking-tight">
+                Order Line Items ({items.length})
+              </h3>
 
-              <div className="max-h-72 overflow-y-auto space-y-3 divide-y divide-border-subtle pr-1">
+              <div className="max-h-72 overflow-y-auto space-y-3 divide-y divide-slate-200/60 pr-1 scrollbar-thin">
                 {items.map((item) => (
-                  <div key={item.id} className="pt-3 first:pt-0 flex items-center gap-3.5">
-                    <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-surface-100 shrink-0 border border-white/5">
-                      <Image src={item.product.images[0]} alt={item.product.title} fill className="object-cover" />
-                      <span className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-gold-500 text-black text-[9px] font-bold flex items-center justify-center">
+                  <div
+                    key={item.id}
+                    className="pt-3 first:pt-0 flex items-center gap-3.5"
+                  >
+                    <div className="relative w-14 h-14 rounded-xl overflow-hidden bg-white shrink-0 border border-slate-200">
+                      <Image
+                        src={item.product.images[0]}
+                        alt={item.product.title}
+                        fill
+                        className="object-cover"
+                      />
+                      <span className="absolute top-0.5 right-0.5 w-4 h-4 rounded-full bg-amber-600 text-white text-[9px] font-bold flex items-center justify-center">
                         {item.quantity}
                       </span>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h4 className="text-xs font-bold text-white truncate">{item.product.title}</h4>
-                      <p className="text-[11px] text-gray-400">
-                        {item.selectedVariant?.name || item.product.brandName}
+                      <h4 className="text-xs font-bold text-slate-900 truncate">
+                        {item.product.title}
+                      </h4>
+                      <p className="text-[11px] text-slate-500">
+                        {item.selectedVariant?.name ||
+                          item.product.brandName}
                       </p>
                     </div>
-                    <span className="text-xs font-bold text-white shrink-0">
+                    <span className="text-xs font-bold text-slate-900 shrink-0">
                       {formatPrice(item.totalPrice)}
                     </span>
                   </div>
@@ -592,42 +723,56 @@ export default function CheckoutPage() {
               </div>
 
               {/* Price Calculation */}
-              <div className="space-y-2.5 text-xs text-gray-300 border-t border-border-subtle pt-4">
+              <div className="space-y-2.5 text-xs text-slate-600 border-t border-slate-200/60 pt-4">
                 <div className="flex justify-between">
                   <span>Subtotal</span>
-                  <span className="font-semibold text-white">{formatPrice(subtotal)}</span>
+                  <span className="font-semibold text-slate-900">
+                    {formatPrice(subtotal)}
+                  </span>
                 </div>
                 {discountAmount > 0 && (
-                  <div className="flex justify-between text-emerald-400">
-                    <span>Privilege Coupon ({appliedCoupon?.code})</span>
+                  <div className="flex justify-between text-emerald-700">
+                    <span>
+                      Privilege Coupon ({appliedCoupon?.code})
+                    </span>
                     <span>-{formatPrice(discountAmount)}</span>
                   </div>
                 )}
                 <div className="flex justify-between">
                   <span>Shipping ({deliveryMethod.toUpperCase()})</span>
-                  <span className="font-semibold text-white">
-                    {finalShipping === 0 ? 'FREE' : formatPrice(finalShipping)}
+                  <span className="font-semibold text-slate-900">
+                    {finalShipping === 0
+                      ? 'FREE'
+                      : formatPrice(finalShipping)}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span>Estimated Tax</span>
-                  <span className="font-semibold text-white">{formatPrice(taxAmount)}</span>
+                  <span className="font-semibold text-slate-900">
+                    {formatPrice(taxAmount)}
+                  </span>
                 </div>
-                <div className="flex justify-between text-base font-extrabold text-white pt-3 border-t border-border-light">
+                <div className="flex justify-between text-base font-extrabold text-slate-900 pt-3 border-t border-slate-200">
                   <span>Final Total</span>
-                  <span className="text-xl text-gold-400 font-display">{formatPrice(finalTotal)}</span>
+                  <span className="text-xl text-amber-800 font-display font-bold">
+                    {formatPrice(finalTotal)}
+                  </span>
                 </div>
               </div>
 
-              <div className="pt-2 p-3 rounded-2xl bg-surface-100/70 border border-white/5 space-y-1.5 text-[11px] text-gray-400">
-                <div className="flex items-center gap-1.5 text-emerald-400 font-semibold">
-                  <ShieldCheck className="w-3.5 h-3.5" />
+              <div className="pt-2 p-3.5 rounded-2xl bg-white border border-slate-200 space-y-1.5 text-[11px] text-slate-600">
+                <div className="flex items-center gap-1.5 text-emerald-700 font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
                   <span>Fully Insured Worldwide Dispatch</span>
                 </div>
-                <p>Serial numbers registered to purchaser ledger upon shipment release.</p>
+                <p className="text-slate-500">
+                  Serial numbers registered to purchaser ledger upon shipment release.
+                </p>
               </div>
+
             </div>
           </div>
+
         </div>
       </div>
     </div>

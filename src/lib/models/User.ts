@@ -60,6 +60,8 @@ const UserSchema = new Schema<IUser>(
   { timestamps: true, collection: 'users' }
 );
 
+UserSchema.index({ emailVerificationTokenHash: 1 }, { sparse: true });
+
 const User: Model<IUser> =
   (mongoose.models.User as Model<IUser>) || mongoose.model<IUser>('User', UserSchema);
 

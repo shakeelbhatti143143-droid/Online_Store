@@ -3,6 +3,7 @@ import connectDB from '@/lib/mongodb';
 import User, { IUser } from '@/lib/models/User';
 import { verifyToken, AuthTokenPayload } from '@/lib/auth';
 import { getAdminSession } from '@/lib/admin-session';
+import { isAdminEmail } from '@/lib/config';
 
 export type AuthUser = {
   id: string;
@@ -10,6 +11,7 @@ export type AuthUser = {
   role: 'user' | 'admin';
   fullName: string;
   isActive: boolean;
+  emailVerified: boolean;
 };
 
 export function getBearerToken(request: NextRequest): string | null {
@@ -26,7 +28,15 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUser | null
     payload = verifyToken(token);
   }
 
-  // If no Bearer token, try the admin session cookie
+  // If no Bearer token, try the user auth cookie
+  if (!payload?.userId) {
+    const cookieToken = request.cookies.get('luxe_auth_token')?.value || request.cookies.get('auth_token')?.value;
+    if (cookieToken) {
+      payload = verifyToken(cookieToken);
+    }
+  }
+
+  // If still no token, try the admin session cookie
   if (!payload?.userId) {
     const adminSession = await getAdminSession(request);
     if (adminSession?.adminId) {
@@ -47,8 +57,9 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUser | null
     fullName: string;
     role: 'user' | 'admin';
     isActive: boolean;
+    emailVerified: boolean;
   }>();
-  if (!user || user.isActive === false) return null;
+  if (!user || user.isActive === false || user.emailVerified === false) return null;
 
   return {
     id: String(user._id),
@@ -56,6 +67,7 @@ export async function getAuthUser(request: NextRequest): Promise<AuthUser | null
     role: user.role,
     fullName: user.fullName,
     isActive: true,
+    emailVerified: true,
   };
 }
 
@@ -68,7 +80,7 @@ export async function requireAuth(request: NextRequest): Promise<AuthUser | Next
 }
 
 export function isStaff(user: AuthUser): boolean {
-  return user.role === 'admin';
+  return user.role === 'admin' && isAdminEmail(user.email);
 }
 
 export async function requireStaff(request: NextRequest): Promise<AuthUser | NextResponse> {

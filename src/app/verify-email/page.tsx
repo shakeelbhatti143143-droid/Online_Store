@@ -59,7 +59,7 @@ function VerifyEmailPageContent() {
     };
 
     const handleGoToLogin = () => {
-        router.push('/?auth=login');
+        router.push('/login?verified=true');
     };
 
     const renderContent = () => {

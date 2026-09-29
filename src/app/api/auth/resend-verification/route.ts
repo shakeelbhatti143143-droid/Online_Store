@@ -1,7 +1,9 @@
+export const dynamic = 'force-dynamic';
+
 import { NextRequest, NextResponse } from 'next/server';
 import connectDB from '@/lib/mongodb';
 import User from '@/lib/models/User';
-import { normalizeEmail } from '@/lib/config';
+import { normalizeEmail, getAppBaseUrl } from '@/lib/config';
 import {
     generateVerificationToken,
     hashVerificationToken,
@@ -55,7 +57,8 @@ export async function POST(request: NextRequest) {
             await user.save();
 
             try {
-                await sendVerificationEmail(normalizedEmail, rawToken, expiresAt);
+                const baseUrl = getAppBaseUrl(request);
+                await sendVerificationEmail(normalizedEmail, rawToken, expiresAt, baseUrl);
             } catch (emailErr) {
                 console.error('[resend-verification] Failed to send verification email:', emailErr);
             }

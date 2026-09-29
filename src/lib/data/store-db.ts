@@ -49,6 +49,7 @@ import {
   roundMoney,
 } from '@/lib/pricing';
 import { slugify } from '@/lib/utils';
+import { normalizeEmail } from '@/lib/config';
 
 let seedPromise: Promise<void> | null = null;
 
@@ -1037,8 +1038,49 @@ class StoreDatabase {
 
   async getCustomers(): Promise<UserProfile[]> {
     await ensureConnection();
-    const docs = await User.find({}).sort({ createdAt: -1 }).lean();
-    return docs.map(mapUser);
+    const [docs, orders] = await Promise.all([
+      User.find({}).sort({ createdAt: -1 }).lean(),
+      Order.find({}).lean(),
+    ]);
+
+    const orderStatsByUser = new Map<string, { count: number; spend: number }>();
+    const orderStatsByEmail = new Map<string, { count: number; spend: number }>();
+
+    for (const order of orders) {
+      const uId = order.userId ? String(order.userId) : null;
+      const email = order.customerEmail ? normalizeEmail(order.customerEmail) : null;
+      const amount = Number(order.totalAmount) || 0;
+
+      if (uId) {
+        const curr = orderStatsByUser.get(uId) || { count: 0, spend: 0 };
+        curr.count += 1;
+        curr.spend += amount;
+        orderStatsByUser.set(uId, curr);
+      }
+      if (email) {
+        const curr = orderStatsByEmail.get(email) || { count: 0, spend: 0 };
+        curr.count += 1;
+        curr.spend += amount;
+        orderStatsByEmail.set(email, curr);
+      }
+    }
+
+    return docs.map((doc) => {
+      const base = mapUser(doc);
+      const docId = String(doc._id);
+      const docEmail = normalizeEmail(doc.email);
+      const byId = orderStatsByUser.get(docId);
+      const byEmail = orderStatsByEmail.get(docEmail);
+
+      const count = (byId ? byId.count : 0) || (byEmail ? byEmail.count : 0);
+      const spend = (byId ? byId.spend : 0) || (byEmail ? byEmail.spend : 0);
+
+      return {
+        ...base,
+        ordersCount: count,
+        totalSpend: Math.round(spend * 100) / 100,
+      };
+    });
   }
 
   async findUserByEmail() {
@@ -1055,11 +1097,14 @@ class StoreDatabase {
 
   async getAnalytics(): Promise<AnalyticsSummary> {
     await ensureConnection();
-    const [products, orders, users] = await Promise.all([
+    const [products, orders, totalUsers, verifiedUsers, adminCount] = await Promise.all([
       Product.find({}).lean(),
       Order.find({}).lean(),
       User.countDocuments(),
+      User.countDocuments({ emailVerified: true }),
+      User.countDocuments({ role: 'admin' }),
     ]);
+    const unverifiedUsers = Math.max(0, totalUsers - verifiedUsers);
     const paidOrders = orders.filter((o) => o.paymentStatus === 'paid');
     const totalRevenue = paidOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
     const pendingOrders = orders.filter((o) => o.status === 'pending' || o.status === 'processing').length;
@@ -1122,7 +1167,11 @@ class StoreDatabase {
     return {
       totalRevenue,
       totalOrders: orders.length,
-      totalCustomers: users,
+      totalCustomers: totalUsers,
+      totalUsers,
+      verifiedUsers,
+      unverifiedUsers,
+      adminCount,
       totalProducts: products.length,
       pendingOrders,
       lowStockCount,
